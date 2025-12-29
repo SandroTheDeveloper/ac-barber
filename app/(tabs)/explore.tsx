@@ -7,7 +7,7 @@ import { ThemedView } from '@/components/themed-view';
 import { Collapsible } from '@/components/ui/collapsible';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Fonts } from '@/constants/theme';
-import { CalendarMonth } from '../calendar';
+import { BookingCalendar } from '../calendar';
 
 export default function TabTwoScreen() {
   return (
@@ -15,7 +15,7 @@ export default function TabTwoScreen() {
       headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
       headerImage={
         <IconSymbol
-          size={310}
+          size={100}
           color="#808080"
           name="chevron.left.forwardslash.chevron.right"
           style={styles.headerImage}
@@ -31,9 +31,7 @@ export default function TabTwoScreen() {
         </ThemedText>
       </ThemedView>
 
-      {Array.from({ length: 12 }).map((_, i) => (
-        <CalendarMonth key={i} year={2026} month={i} />
-      ))}
+      <BookingCalendar/>
       
       <Collapsible title="File-based routing">
         <ThemedText>
