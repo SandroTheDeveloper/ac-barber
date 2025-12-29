@@ -162,8 +162,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   selectedButton: {
-    backgroundColor: '#000',
-    borderColor: '#000',
+    backgroundColor: 'green',
+    borderColor: 'green',
   },
   selectedText: {
     color: '#fff',

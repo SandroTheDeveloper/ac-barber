@@ -1,4 +1,4 @@
-import { useLocalSearchParams, Link } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { StyleSheet } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
@@ -30,9 +30,6 @@ export default function ModalScreen() {
           Orario selezionato: {selectedHour}
         </ThemedText>
       )}
-      <Link href="../" dismissTo style={styles.link}>
-        <ThemedText type="link">Torna al calendario</ThemedText>
-      </Link>
     </ThemedView>
   );
 }
@@ -43,9 +40,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
-  },
-  link: {
-    marginTop: 15,
-    paddingVertical: 15,
   },
 });

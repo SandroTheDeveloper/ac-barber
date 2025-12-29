@@ -32,6 +32,14 @@ export default function TabLayout() {
 ,
         }}
       />
+            <Tabs.Screen
+        name="profilo"
+        options={{
+          title: 'Mio Profilo',
+          tabBarIcon: ({ color }) => <FontAwesome5 name="user" size={24} color={color} />
+,
+        }}
+      />
     </Tabs>
   );
 }
