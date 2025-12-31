@@ -1,10 +1,11 @@
 import { useLocalSearchParams } from "expo-router";
-import { StyleSheet } from "react-native";
+import { Pressable, StyleSheet } from "react-native";
 import { useState } from "react";
 
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { SelectHour, Service, Period } from "./selectHour";
+import { useRouter } from "expo-router";
 
 export default function ModalScreen() {
   const { date } = useLocalSearchParams<{ date: string }>();
@@ -13,7 +14,40 @@ export default function ModalScreen() {
   const [service, setService] = useState<Service | null>(null);
   const [period, setPeriod] = useState<Period | null>(null);
   const [hour, setHour] = useState<string | null>(null);
+  const [confirmed, setConfirmed] = useState(false);
+  const router = useRouter();
 
+  /* =======================
+     STEP FINALE DI CONFERMA
+     ======================= */
+  if (confirmed) {
+    return (
+      <ThemedView style={styles.container}>
+        <ThemedText type="title">✅ Prenotazione confermata</ThemedText>
+
+        {selectedDate && (
+          <ThemedText style={styles.summary}>
+            📅 {selectedDate.toLocaleDateString("it-IT")}
+          </ThemedText>
+        )}
+
+        <ThemedText style={styles.summary}>✂️ {service}</ThemedText>
+        <ThemedText style={styles.summary}>🌤️ {period}</ThemedText>
+        <ThemedText style={styles.summary}>⏰ {hour}</ThemedText>
+
+        <Pressable
+          style={styles.button}
+          onPress={() => router.replace("/(tabs)/profilo")}
+        >
+          <ThemedText>Le mie prenotazioni</ThemedText>
+        </Pressable>
+      </ThemedView>
+    );
+  }
+
+  /* =======================
+     FLOW NORMALE
+     ======================= */
   return (
     <ThemedView style={styles.container}>
       <ThemedText type="title">Hai selezionato:</ThemedText>
@@ -25,6 +59,12 @@ export default function ModalScreen() {
       {service && <ThemedText>✂️ {service}</ThemedText>}
       {period && <ThemedText>🌤️ {period}</ThemedText>}
       {hour && <ThemedText>⏰ {hour}</ThemedText>}
+
+      {service && period && hour && (
+        <Pressable style={styles.button} onPress={() => setConfirmed(true)}>
+          <ThemedText>Conferma prenotazione</ThemedText>
+        </Pressable>
+      )}
 
       <SelectHour
         service={service}
@@ -55,5 +95,23 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
+  },
+  button: {
+    padding: 12,
+    borderWidth: 1,
+    borderRadius: 8,
+    marginVertical: 12,
+    width: 220,
+    height: 50,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  secondaryButton: {
+    marginTop: 24,
+    opacity: 0.7,
+  },
+  summary: {
+    marginTop: 8,
+    fontSize: 16,
   },
 });
