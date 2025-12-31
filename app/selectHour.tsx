@@ -1,100 +1,113 @@
-import { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 
+export type Service = 'TAGLIO' | 'BARBA' | 'TAGLIO+BARBA';
+export type Period = 'MATTINO' | 'POMERIGGIO';
+
 type SelectHourProps = {
-  onSelect: (hour: string, service: string) => void;
-  selected?: string;
+  service: Service | null;
+  period: Period | null;
+  selectedHour?: string;
+
+  onSelectService: (service: Service) => void;
+  onSelectPeriod: (period: Period) => void;
+  onSelectHour: (hour: string) => void;
+
+  onBackFromService: () => void;
+  onBackFromPeriod: () => void;
+  onBackFromHour: () => void;
 };
 
-export function SelectHour({ onSelect, selected }: SelectHourProps) {
-  const [service, setService] = useState<'TAGLIO' | 'BARBA' | 'TAGLIO+BARBA' | null>(null);
-  const [period, setPeriod] = useState<'MATTINO' | 'POMERIGGIO' | null>(null);
+export function SelectHour({
+  service,
+  period,
+  selectedHour,
+  onSelectService,
+  onSelectPeriod,
+  onSelectHour,
+  onBackFromService,
+  onBackFromPeriod,
+  onBackFromHour,
+}: SelectHourProps) {
   const interval = 15;
   const CELL_SIZE = 70;
 
-  // genera gli slot in base al periodo
   const generateSlots = (): string[] => {
     if (!period) return [];
-    const hours: string[] = [];
-    let startHour: number, endHour: number;
 
-    if (period === 'MATTINO') {
-      startHour = 9;
-      endHour = 13;
-    } else {
-      startHour = 14;
-      endHour = 19;
-    }
+    const hours: string[] = [];
+    const startHour = period === 'MATTINO' ? 9 : 14;
+    const endHour = period === 'MATTINO' ? 13 : 19;
 
     for (let h = startHour; h <= endHour; h++) {
       for (let m = 0; m < 60; m += interval) {
         if (period === 'MATTINO' && h === 13 && m > 45) continue;
         if (period === 'POMERIGGIO' && h === 19 && m > 0) continue;
-        const hourString = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
-        hours.push(hourString);
+
+        hours.push(`${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`);
       }
     }
     return hours;
   };
 
   const slots = generateSlots();
-  const slotsPerRow = 4;
   const rows: string[][] = [];
-  for (let i = 0; i < slots.length; i += slotsPerRow) {
-    rows.push(slots.slice(i, i + slotsPerRow));
+  for (let i = 0; i < slots.length; i += 4) {
+    rows.push(slots.slice(i, i + 4));
   }
 
   return (
     <View style={styles.container}>
-      {/* Step 1: Selezione Servizio */}
+
+      {/* STEP 1 — SERVIZIO */}
       {!service && (
-        <View style={styles.typeContainer}>
-          {['TAGLIO', 'BARBA', 'TAGLIO+BARBA'].map((s) => (
-            <Pressable key={s} onPress={() => setService(s as any)} style={styles.periodButton}>
-              <ThemedText style={styles.periodText}>{s}</ThemedText>
+        <View>
+          {(['TAGLIO', 'BARBA', 'TAGLIO+BARBA'] as Service[]).map((s) => (
+            <Pressable key={s} onPress={() => onSelectService(s)} style={styles.button}>
+              <ThemedText>{s}</ThemedText>
             </Pressable>
           ))}
         </View>
       )}
 
-      {/* Step 2: Selezione Periodo */}
+      {/* STEP 2 — PERIODO */}
       {service && !period && (
-        <><View style={styles.periodContainer}>
-              <Pressable onPress={() => setService(null)} style={styles.backButton}>
-                    <ThemedText>← Torna indietro</ThemedText>
-                </Pressable>
-                <View style={styles.row}>
-                  <Pressable onPress={() => setPeriod('MATTINO')} style={styles.periodButton}>
-                      <ThemedText style={styles.periodText}>MATTINO</ThemedText>
-                  </Pressable>
-                  <Pressable onPress={() => setPeriod('POMERIGGIO')} style={styles.periodButton}>
-                      <ThemedText style={styles.periodText}>POMERIGGIO</ThemedText>
-                  </Pressable>
-                  </View>
-            </View></>
+        <View>
+          <Pressable onPress={onBackFromService} style={styles.back}>
+            <ThemedText>← Indietro</ThemedText>
+          </Pressable>
+
+          <View>
+            {(['MATTINO', 'POMERIGGIO'] as Period[]).map((p) => (
+              <Pressable key={p} onPress={() => onSelectPeriod(p)} style={styles.button}>
+                <ThemedText>{p}</ThemedText>
+              </Pressable>
+            ))}
+          </View>
+        </View>
       )}
 
-      {/* Step 3: Selezione Orario */}
+      {/* STEP 3 — ORARIO */}
       {service && period && (
-        <>
-          <View style={styles.row}>
-            <Pressable onPress={() => setPeriod(null)} style={styles.backButton}>
-              <ThemedText>← Torna indietro</ThemedText>
-            </Pressable>
-          </View>
+        <View>
+          <Pressable onPress={onBackFromPeriod} style={styles.back}>
+            <ThemedText>← Indietro</ThemedText>
+          </Pressable>
 
           {rows.map((row) => (
             <View key={row.join('-')} style={styles.row}>
               {row.map((hour) => {
-                const isSelected = selected === hour;
+                const isSelected = selectedHour === hour;
                 return (
                   <Pressable
                     key={hour}
-                    onPress={() => onSelect(hour, service)}
-                    style={[styles.hourButton, isSelected && styles.selectedButton]}
+                    onPress={() => onSelectHour(hour)}
+                    style={[
+                      styles.hour,
+                      isSelected && styles.selected,
+                    ]}
                   >
-                    <ThemedText style={isSelected ? styles.selectedText : styles.hourText}>
+                    <ThemedText style={isSelected && styles.selectedText}>
                       {hour}
                     </ThemedText>
                   </Pressable>
@@ -102,71 +115,37 @@ export function SelectHour({ onSelect, selected }: SelectHourProps) {
               })}
             </View>
           ))}
-        </>
+        </View>
       )}
     </View>
   );
 }
 
-const CELL_SIZE = 70;
-
 const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'column',
-    marginVertical: 12,
+  container: { 
+    marginTop: 20,
+    alignSelf: 'center',
   },
-  typeContainer: {
-    flexDirection: 'column',
-    justifyContent: 'space-around',
-    marginBottom: 12,
-  },
-    periodContainer: {
-    flexDirection: 'column',
-    justifyContent: 'space-around',
-    marginBottom: 12,
-  },
-  periodButton: {
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 8,
+  row: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8, gap: 12 },
+  button: {
+    padding: 12,
     borderWidth: 1,
-    borderColor: '#888',
-  },
-  periodText: {
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  row: {
-    flexDirection: 'row',
+    borderRadius: 8,
     marginBottom: 8,
-    justifyContent: 'space-between',
+    width: 200,
+    height: 50,
+        alignItems: 'center',
+
   },
-  backButton: {
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 6,
+  back: { marginBottom: 12 },
+  hour: {
+    width: 70,
+    height: 70,
     borderWidth: 1,
-    borderColor: '#888',
-    marginBottom: 12,
-  },
-  hourButton: {
-    width: CELL_SIZE,
-    height: CELL_SIZE,
-    justifyContent: 'center',
-    alignItems: 'center',
     borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#888',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  hourText: {
-    fontSize: 16,
-  },
-  selectedButton: {
-    backgroundColor: 'green',
-    borderColor: 'green',
-  },
-  selectedText: {
-    color: '#fff',
-    fontWeight: '600',
-  },
+  selected: { backgroundColor: 'green', borderColor: 'green' },
+  selectedText: { color: '#fff' },
 });

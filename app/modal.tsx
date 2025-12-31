@@ -1,35 +1,52 @@
 import { useLocalSearchParams } from 'expo-router';
 import { StyleSheet } from 'react-native';
+import { useState } from 'react';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { SelectHour } from './selectHour';
-import { useState } from 'react';
+import { SelectHour, Service, Period } from './selectHour';
 
 export default function ModalScreen() {
   const { date } = useLocalSearchParams<{ date: string }>();
+  const selectedDate = date ? new Date(decodeURIComponent(date)) : null;
 
-  const selected = date
-    ? new Date(decodeURIComponent(date))
-    : null;
-  const [selectedHour, setSelectedHour] = useState<string | null>(null);
+  const [service, setService] = useState<Service | null>(null);
+  const [period, setPeriod] = useState<Period | null>(null);
+  const [hour, setHour] = useState<string | null>(null);
 
   return (
     <ThemedView style={styles.container}>
       <ThemedText type="title">Hai selezionato:</ThemedText>
-      {selected ? (
-        <ThemedText>
-          {selected.toLocaleDateString('it-IT')}
-        </ThemedText>
-      ) : (
-        <ThemedText>Nessuna data</ThemedText>
+
+      {selectedDate && (
+        <ThemedText>📅 {selectedDate.toLocaleDateString('it-IT')}</ThemedText>
       )}
-      <SelectHour selected={selectedHour || undefined} onSelect={setSelectedHour} />
-      {selectedHour && (
-        <ThemedText style={{ marginTop: 10 }}>
-          Orario selezionato: {selectedHour}
-        </ThemedText>
-      )}
+
+      {service && <ThemedText>✂️ {service}</ThemedText>}
+      {period && <ThemedText>🌤️ {period}</ThemedText>}
+      {hour && <ThemedText>⏰ {hour}</ThemedText>}
+
+      <SelectHour
+        service={service}
+        period={period}
+        selectedHour={hour ?? undefined}
+        onSelectService={(s) => {
+          setService(s);
+          setPeriod(null);
+          setHour(null);
+        }}
+        onSelectPeriod={(p) => {
+          setPeriod(p);
+          setHour(null);
+        }}
+        onSelectHour={setHour}
+        onBackFromService={() => setService(null)}
+        onBackFromPeriod={() => {
+          setPeriod(null);
+          setHour(null);
+        }}
+        onBackFromHour={() => setHour(null)}
+      />
     </ThemedView>
   );
 }
@@ -37,8 +54,6 @@ export default function ModalScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
     padding: 20,
   },
 });
