@@ -45,6 +45,15 @@ export default function TabLayout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="management"
+        options={{
+          title: "Gestione clienti",
+          tabBarIcon: ({ color }) => (
+            <FontAwesome5 name="user" size={24} color={color} />
+          ),
+        }}
+      />
     </Tabs>
   );
 }

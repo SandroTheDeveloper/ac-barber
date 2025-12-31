@@ -6,6 +6,7 @@ import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { SelectHour, Service, Period } from "./selectHour";
 import { useRouter } from "expo-router";
+import { supabase } from "@/app/utils/supabase";
 
 export default function ModalScreen() {
   const { date } = useLocalSearchParams<{ date: string }>();
@@ -16,6 +17,11 @@ export default function ModalScreen() {
   const [hour, setHour] = useState<string | null>(null);
   const [confirmed, setConfirmed] = useState(false);
   const router = useRouter();
+
+  const test = async () => {
+    const { data, error } = await supabase.from("prenotazioni").select("*");
+    console.log(data, error);
+  };
 
   /* =======================
      STEP FINALE DI CONFERMA
