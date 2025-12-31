@@ -24,7 +24,7 @@ export default function ClientsScreen() {
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editingId, setEditingId] = useState("");
 
   const loadClients = async () => {
     const data = await getClients();
@@ -46,7 +46,7 @@ export default function ClientsScreen() {
         email,
         password,
       });
-      setEditingId(null);
+      setEditingId("");
     } else {
       await addClient({
         first_name: firstName,
@@ -74,7 +74,7 @@ export default function ClientsScreen() {
     setPassword(client.password || "");
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     await deleteClient(id);
     loadClients();
   };

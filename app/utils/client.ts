@@ -1,12 +1,13 @@
 import { supabase } from './supabase';
 
 export type Client = {
-  id?: number; // AUTOINCREMENT
+  id?: string; // // auth.user.id
   first_name: string;
   last_name: string;
   phone?: string;
   email?: string;
   password?: string;
+  role?: 'ADMIN' | 'CLIENT';
 };
 
 // CREATE
@@ -39,7 +40,7 @@ export async function getClients(): Promise<Client[]> {
 }
 
 // UPDATE
-export async function updateClient(id: number, updates: Partial<Client>): Promise<Client | null> {
+export async function updateClient(id: string, updates: Partial<Client>): Promise<Client | null> {
   const { data, error } = await supabase
     .from('clients')
     .update(updates)
@@ -56,7 +57,7 @@ export async function updateClient(id: number, updates: Partial<Client>): Promis
 }
 
 // DELETE
-export async function deleteClient(id: number): Promise<boolean> {
+export async function deleteClient(id: string): Promise<boolean> {
   const { error } = await supabase
     .from('clients')
     .delete()
