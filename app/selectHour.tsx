@@ -1,8 +1,8 @@
-import { Pressable, StyleSheet, View } from 'react-native';
-import { ThemedText } from '@/components/themed-text';
+import { Pressable, StyleSheet, View } from "react-native";
+import { ThemedText } from "@/components/themed-text";
 
-export type Service = 'TAGLIO' | 'BARBA' | 'TAGLIO+BARBA';
-export type Period = 'MATTINO' | 'POMERIGGIO';
+export type Service = "TAGLIO" | "BARBA" | "TAGLIO+BARBA";
+export type Period = "MATTINO" | "POMERIGGIO";
 
 type SelectHourProps = {
   service: Service | null;
@@ -36,15 +36,17 @@ export function SelectHour({
     if (!period) return [];
 
     const hours: string[] = [];
-    const startHour = period === 'MATTINO' ? 9 : 14;
-    const endHour = period === 'MATTINO' ? 13 : 19;
+    const startHour = period === "MATTINO" ? 9 : 14;
+    const endHour = period === "MATTINO" ? 13 : 19;
 
     for (let h = startHour; h <= endHour; h++) {
       for (let m = 0; m < 60; m += interval) {
-        if (period === 'MATTINO' && h === 13 && m > 45) continue;
-        if (period === 'POMERIGGIO' && h === 19 && m > 0) continue;
+        if (period === "MATTINO" && h === 13 && m > 45) continue;
+        if (period === "POMERIGGIO" && h === 19 && m > 0) continue;
 
-        hours.push(`${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`);
+        hours.push(
+          `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}`
+        );
       }
     }
     return hours;
@@ -58,12 +60,15 @@ export function SelectHour({
 
   return (
     <View style={styles.container}>
-
       {/* STEP 1 — SERVIZIO */}
       {!service && (
         <View>
-          {(['TAGLIO', 'BARBA', 'TAGLIO+BARBA'] as Service[]).map((s) => (
-            <Pressable key={s} onPress={() => onSelectService(s)} style={styles.button}>
+          {(["TAGLIO", "BARBA", "TAGLIO+BARBA"] as Service[]).map((s) => (
+            <Pressable
+              key={s}
+              onPress={() => onSelectService(s)}
+              style={styles.button}
+            >
               <ThemedText>{s}</ThemedText>
             </Pressable>
           ))}
@@ -78,8 +83,12 @@ export function SelectHour({
           </Pressable>
 
           <View>
-            {(['MATTINO', 'POMERIGGIO'] as Period[]).map((p) => (
-              <Pressable key={p} onPress={() => onSelectPeriod(p)} style={styles.button}>
+            {(["MATTINO", "POMERIGGIO"] as Period[]).map((p) => (
+              <Pressable
+                key={p}
+                onPress={() => onSelectPeriod(p)}
+                style={styles.button}
+              >
                 <ThemedText>{p}</ThemedText>
               </Pressable>
             ))}
@@ -95,17 +104,14 @@ export function SelectHour({
           </Pressable>
 
           {rows.map((row) => (
-            <View key={row.join('-')} style={styles.row}>
+            <View key={row.join("-")} style={styles.row}>
               {row.map((hour) => {
                 const isSelected = selectedHour === hour;
                 return (
                   <Pressable
                     key={hour}
                     onPress={() => onSelectHour(hour)}
-                    style={[
-                      styles.hour,
-                      isSelected && styles.selected,
-                    ]}
+                    style={[styles.hour, isSelected && styles.selected]}
                   >
                     <ThemedText style={isSelected && styles.selectedText}>
                       {hour}
@@ -122,11 +128,16 @@ export function SelectHour({
 }
 
 const styles = StyleSheet.create({
-  container: { 
+  container: {
     marginTop: 20,
-    alignSelf: 'center',
+    alignSelf: "center",
   },
-  row: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8, gap: 12 },
+  row: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 8,
+    gap: 12,
+  },
   button: {
     padding: 12,
     borderWidth: 1,
@@ -134,8 +145,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     width: 200,
     height: 50,
-        alignItems: 'center',
-
+    alignItems: "center",
   },
   back: { marginBottom: 12 },
   hour: {
@@ -143,9 +153,9 @@ const styles = StyleSheet.create({
     height: 70,
     borderWidth: 1,
     borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
-  selected: { backgroundColor: 'green', borderColor: 'green' },
-  selectedText: { color: '#fff' },
+  selected: { backgroundColor: "green", borderColor: "green" },
+  selectedText: { color: "#fff" },
 });

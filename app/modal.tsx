@@ -1,10 +1,10 @@
-import { useLocalSearchParams } from 'expo-router';
-import { StyleSheet } from 'react-native';
-import { useState } from 'react';
+import { useLocalSearchParams } from "expo-router";
+import { StyleSheet } from "react-native";
+import { useState } from "react";
 
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { SelectHour, Service, Period } from './selectHour';
+import { ThemedText } from "@/components/themed-text";
+import { ThemedView } from "@/components/themed-view";
+import { SelectHour, Service, Period } from "./selectHour";
 
 export default function ModalScreen() {
   const { date } = useLocalSearchParams<{ date: string }>();
@@ -19,7 +19,7 @@ export default function ModalScreen() {
       <ThemedText type="title">Hai selezionato:</ThemedText>
 
       {selectedDate && (
-        <ThemedText>📅 {selectedDate.toLocaleDateString('it-IT')}</ThemedText>
+        <ThemedText>📅 {selectedDate.toLocaleDateString("it-IT")}</ThemedText>
       )}
 
       {service && <ThemedText>✂️ {service}</ThemedText>}
