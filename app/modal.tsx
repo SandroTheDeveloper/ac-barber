@@ -1,6 +1,6 @@
 import { useLocalSearchParams } from "expo-router";
-import { Pressable, StyleSheet } from "react-native";
-import { useState } from "react";
+import { Pressable, StyleSheet, View } from "react-native";
+import { useRef, useState } from "react";
 
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
@@ -8,7 +8,11 @@ import { SelectHour, Service, Period } from "./selectHour";
 import { useRouter } from "expo-router";
 import { supabase } from "@/app/utils/supabase";
 
-export default function ModalScreen() {
+type ModalScreenProps = {
+  onBackFromPeriod: () => void;
+};
+
+export default function ModalScreen({ onBackFromPeriod }: ModalScreenProps) {
   const { date } = useLocalSearchParams<{ date: string }>();
   const selectedDate = date ? new Date(decodeURIComponent(date)) : null;
 
@@ -18,10 +22,7 @@ export default function ModalScreen() {
   const [confirmed, setConfirmed] = useState(false);
   const router = useRouter();
 
-  const test = async () => {
-    const { data, error } = await supabase.from("prenotazioni").select("*");
-    console.log(data, error);
-  };
+  const selectHourRef = useRef<{ onBackFromPeriod: () => void }>(null);
 
   /* =======================
      STEP FINALE DI CONFERMA
@@ -67,12 +68,23 @@ export default function ModalScreen() {
       {hour && <ThemedText>⏰ {hour}</ThemedText>}
 
       {service && period && hour && (
-        <Pressable style={styles.button} onPress={() => setConfirmed(true)}>
-          <ThemedText>Conferma prenotazione</ThemedText>
-        </Pressable>
+        <>
+          <View style={{ flexDirection: "row", gap: 12, marginTop: 12 }}>
+            <Pressable style={styles.button} onPress={() => setConfirmed(true)}>
+              <ThemedText>Conferma prenotazione</ThemedText>
+            </Pressable>
+            <Pressable
+              onPress={() => selectHourRef.current?.onBackFromPeriod()}
+              style={styles.button}
+            >
+              <ThemedText>← Indietro</ThemedText>
+            </Pressable>
+          </View>
+        </>
       )}
 
       <SelectHour
+        ref={selectHourRef}
         service={service}
         period={period}
         selectedHour={hour ?? undefined}

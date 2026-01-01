@@ -1,5 +1,6 @@
 import { Pressable, StyleSheet, View } from "react-native";
 import { ThemedText } from "@/components/themed-text";
+import { ForwardedRef, forwardRef, JSX, useImperativeHandle } from "react";
 
 export type Service = "TAGLIO" | "BARBA" | "TAGLIO+BARBA";
 export type Period = "MATTINO" | "POMERIGGIO";
@@ -18,114 +19,128 @@ type SelectHourProps = {
   onBackFromHour: () => void;
 };
 
-export function SelectHour({
-  service,
-  period,
-  selectedHour,
-  onSelectService,
-  onSelectPeriod,
-  onSelectHour,
-  onBackFromService,
-  onBackFromPeriod,
-  onBackFromHour,
-}: SelectHourProps) {
-  const interval = 15;
-  const CELL_SIZE = 70;
+export const SelectHour = forwardRef(
+  (
+    {
+      service,
+      period,
+      selectedHour,
+      onSelectService,
+      onSelectPeriod,
+      onSelectHour,
+      onBackFromService,
+      onBackFromPeriod,
+      onBackFromHour,
+    }: SelectHourProps,
+    ref: ForwardedRef<{ onBackFromPeriod: () => void }>
+  ): JSX.Element => {
+    const interval = 15;
+    const CELL_SIZE = 70;
 
-  const generateSlots = (): string[] => {
-    if (!period) return [];
+    const generateSlots = (): string[] => {
+      if (!period) return [];
 
-    const hours: string[] = [];
-    const startHour = period === "MATTINO" ? 9 : 14;
-    const endHour = period === "MATTINO" ? 13 : 19;
+      const hours: string[] = [];
+      const startHour = period === "MATTINO" ? 9 : 14;
+      const endHour = period === "MATTINO" ? 13 : 19;
 
-    for (let h = startHour; h <= endHour; h++) {
-      for (let m = 0; m < 60; m += interval) {
-        if (period === "MATTINO" && h === 13 && m > 45) continue;
-        if (period === "POMERIGGIO" && h === 19 && m > 0) continue;
+      for (let h = startHour; h <= endHour; h++) {
+        for (let m = 0; m < 60; m += interval) {
+          if (period === "MATTINO" && h === 13 && m > 45) continue;
+          if (period === "POMERIGGIO" && h === 19 && m > 0) continue;
 
-        hours.push(
-          `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}`
-        );
+          hours.push(
+            `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}`
+          );
+        }
       }
+      return hours;
+    };
+
+    const slots = generateSlots();
+    const rows: string[][] = [];
+    for (let i = 0; i < slots.length; i += 5) {
+      rows.push(slots.slice(i, i + 5));
     }
-    return hours;
-  };
 
-  const slots = generateSlots();
-  const rows: string[][] = [];
-  for (let i = 0; i < slots.length; i += 4) {
-    rows.push(slots.slice(i, i + 4));
-  }
+    const handleBackFromPeriod = () => {
+      onBackFromPeriod();
+    };
 
-  return (
-    <View style={styles.container}>
-      {/* STEP 1 — SERVIZIO */}
-      {!service && (
-        <View>
-          {(["TAGLIO", "BARBA", "TAGLIO+BARBA"] as Service[]).map((s) => (
-            <Pressable
-              key={s}
-              onPress={() => onSelectService(s)}
-              style={styles.button}
-            >
-              <ThemedText>{s}</ThemedText>
-            </Pressable>
-          ))}
-        </View>
-      )}
+    useImperativeHandle(ref, () => ({
+      onBackFromPeriod: handleBackFromPeriod,
+    }));
 
-      {/* STEP 2 — PERIODO */}
-      {service && !period && (
-        <View>
-          <Pressable onPress={onBackFromService} style={styles.back}>
-            <ThemedText>← Indietro</ThemedText>
-          </Pressable>
-
+    return (
+      <View style={styles.container}>
+        {/* STEP 1 — SERVIZIO */}
+        {!service && (
           <View>
-            {(["MATTINO", "POMERIGGIO"] as Period[]).map((p) => (
+            {(["TAGLIO", "BARBA", "TAGLIO+BARBA"] as Service[]).map((s) => (
               <Pressable
-                key={p}
-                onPress={() => onSelectPeriod(p)}
+                key={s}
+                onPress={() => onSelectService(s)}
                 style={styles.button}
               >
-                <ThemedText>{p}</ThemedText>
+                <ThemedText>{s}</ThemedText>
               </Pressable>
             ))}
           </View>
-        </View>
-      )}
+        )}
 
-      {/* STEP 3 — ORARIO */}
-      {service && period && (
-        <View>
-          <Pressable onPress={onBackFromPeriod} style={styles.back}>
-            <ThemedText>← Indietro</ThemedText>
-          </Pressable>
+        {/* STEP 2 — PERIODO */}
+        {service && !period && (
+          <View>
+            <Pressable onPress={onBackFromService} style={styles.back}>
+              <ThemedText>← Indietro</ThemedText>
+            </Pressable>
 
-          {rows.map((row) => (
-            <View key={row.join("-")} style={styles.row}>
-              {row.map((hour) => {
-                const isSelected = selectedHour === hour;
-                return (
-                  <Pressable
-                    key={hour}
-                    onPress={() => onSelectHour(hour)}
-                    style={[styles.hour, isSelected && styles.selected]}
-                  >
-                    <ThemedText style={isSelected && styles.selectedText}>
-                      {hour}
-                    </ThemedText>
-                  </Pressable>
-                );
-              })}
+            <View>
+              {(["MATTINO", "POMERIGGIO"] as Period[]).map((p) => (
+                <Pressable
+                  key={p}
+                  onPress={() => onSelectPeriod(p)}
+                  style={styles.button}
+                >
+                  <ThemedText>{p}</ThemedText>
+                </Pressable>
+              ))}
             </View>
-          ))}
-        </View>
-      )}
-    </View>
-  );
-}
+          </View>
+        )}
+
+        {/* STEP 3 — ORARIO */}
+        {service && period && (
+          <View>
+            {!selectedHour && (
+              <Pressable onPress={handleBackFromPeriod} style={styles.back}>
+                <ThemedText>← Indietro</ThemedText>
+              </Pressable>
+            )}
+            {rows.map((row) => (
+              <View key={row.join("-")} style={styles.row}>
+                {row.map((hour) => {
+                  const isSelected = selectedHour === hour;
+                  return (
+                    <Pressable
+                      key={hour}
+                      onPress={() => onSelectHour(hour)}
+                      style={[styles.hour, isSelected && styles.selected]}
+                    >
+                      <ThemedText style={isSelected && styles.selectedText}>
+                        {hour}
+                      </ThemedText>
+                    </Pressable>
+                  );
+                })}
+              </View>
+            ))}
+          </View>
+        )}
+      </View>
+    );
+  }
+);
 
 const styles = StyleSheet.create({
   container: {
