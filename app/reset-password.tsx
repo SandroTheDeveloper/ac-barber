@@ -32,7 +32,7 @@ export default function ResetPassword() {
 
   return (
     <View style={styles.container}>
-      <ThemedText type="title">Reset Password</ThemedText>
+      <ThemedText type="title">Inserisci la tua mail</ThemedText>
 
       <TextInput
         placeholder="Email"
@@ -48,7 +48,7 @@ export default function ResetPassword() {
         onPress={handleReset}
         disabled={loading}
       >
-        <ThemedText>{loading ? "Invio..." : "Invia link di reset"}</ThemedText>
+        <ThemedText>{loading ? "Invio..." : "Ricevi link"}</ThemedText>
       </Pressable>
     </View>
   );

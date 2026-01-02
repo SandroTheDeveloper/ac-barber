@@ -17,6 +17,7 @@ import {
   Client,
 } from "@/app/utils/client";
 import CreateAccount from "../createAccount";
+import { useRouter } from "expo-router";
 
 export default function ClientsScreen() {
   const [clients, setClients] = useState<Client[]>([]);
@@ -26,6 +27,7 @@ export default function ClientsScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [editingId, setEditingId] = useState("");
+  const router = useRouter();
 
   const loadClients = async () => {
     const data = await getClients();
@@ -80,7 +82,19 @@ export default function ClientsScreen() {
     loadClients();
   };
 
-  return <CreateAccount></CreateAccount>;
+  return (
+    <View>
+      <Pressable
+        style={styles.button}
+        onPress={() => {
+          console.log("Premuto Aggiungi cliente");
+          router.push("/createAccount");
+        }}
+      >
+        <ThemedText>Aggiungi un cliente</ThemedText>
+      </Pressable>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({

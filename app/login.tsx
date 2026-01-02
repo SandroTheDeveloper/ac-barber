@@ -1,51 +1,58 @@
-import { useState } from "react";
-import { View, TextInput, Pressable, Text, StyleSheet } from "react-native";
-import { supabase } from "./utils/supabase";
+import { useState, useEffect } from "react";
+import { View, TextInput, Pressable, StyleSheet, Alert } from "react-native";
+import { supabase } from "@/app/utils/supabase";
 import { useRouter } from "expo-router";
+import { ThemedText } from "@/components/themed-text";
+
+const DEFAULT_PASSWORD = "esplosionecapelli26";
 
 export default function LoginScreen() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
     if (!email || !password) {
-      setError("Inserisci email e password");
+      Alert.alert("Inserisci email e password");
       return;
     }
 
     setLoading(true);
-    setError(null);
 
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
 
+    setLoading(false);
+
     if (error) {
-      setError(error.message);
+      Alert.alert("Errore", error.message);
+      return;
     }
 
-    // ✅ STOP QUI
-    // Stack.Protected intercetterà la sessione
-    setLoading(false);
+    // ✅ Se la password è quella di default, vai subito a update-password
+    if (password === DEFAULT_PASSWORD) {
+      router.replace(`/update-password?email=${encodeURIComponent(email)}`);
+      return;
+    }
+
+    // ✅ Altrimenti vai ai tabs
+    router.replace("/");
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Accedi</Text>
-
+      <ThemedText type="title">Accedi</ThemedText>
       <TextInput
         placeholder="Email"
         value={email}
         onChangeText={setEmail}
         style={styles.input}
-        autoCapitalize="none"
         keyboardType="email-address"
+        autoCapitalize="none"
       />
-
       <TextInput
         placeholder="Password"
         value={password}
@@ -53,41 +60,19 @@ export default function LoginScreen() {
         style={styles.input}
         secureTextEntry
       />
-
-      {error && <Text style={styles.error}>{error}</Text>}
-
       <Pressable
-        onPress={handleLogin}
         style={[styles.button, loading && { opacity: 0.6 }]}
+        onPress={handleLogin}
         disabled={loading}
       >
-        <Text style={styles.buttonText}>
-          {loading ? "Accesso..." : "Login"}
-        </Text>
+        <ThemedText>{loading ? "Accesso..." : "Login"}</ThemedText>
       </Pressable>
-
-      <Text
-        style={styles.forgotPassword}
-        onPress={() => router.replace("/reset-password")}
-      >
-        {"Password dimenticata?"}
-      </Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    padding: 20,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "600",
-    marginBottom: 20,
-    textAlign: "center",
-  },
+  container: { flex: 1, justifyContent: "center", padding: 20 },
   input: {
     borderWidth: 1,
     borderColor: "#888",
@@ -100,19 +85,6 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 8,
     alignItems: "center",
-    marginTop: 10,
-  },
-  buttonText: {
-    color: "#fff",
-    fontWeight: "600",
-  },
-  error: {
-    color: "red",
-    marginBottom: 10,
-    textAlign: "center",
-  },
-  forgotPassword: {
-    color: "black",
     marginTop: 10,
   },
 });

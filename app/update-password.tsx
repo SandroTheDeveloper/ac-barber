@@ -1,37 +1,44 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { View, TextInput, Pressable, StyleSheet, Alert } from "react-native";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { supabase } from "@/app/utils/supabase";
 import { ThemedText } from "@/components/themed-text";
 
 export default function UpdatePassword() {
+  const { email } = useLocalSearchParams<{ email: string }>();
   const router = useRouter();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    // Verifica che l'utente sia autenticato tramite il link
-    supabase.auth.getUser().then(({ data, error }) => {
-      if (error || !data.user) {
-        Alert.alert("Errore", "Link non valido o scaduto");
-        router.replace("/login");
-      }
-    });
-  }, []);
-
   const handleUpdate = async () => {
     if (!password || !confirmPassword) {
       return Alert.alert("Compila tutti i campi");
     }
-
     if (password !== confirmPassword) {
       return Alert.alert("Le password non coincidono");
     }
 
     setLoading(true);
 
-    const { error } = await supabase.auth.updateUser({ password });
+    const { data: userData, error: fetchUserError } = await supabase
+      .from("clients")
+      .select("*")
+      .eq("email", email)
+      .single();
+
+    if (fetchUserError || !userData) {
+      Alert.alert("Errore", "Utente non trovato");
+      setLoading(false);
+      return;
+    }
+
+    // Aggiorna la password via auth
+    const { error } = await supabase.auth.updateUser({
+      password,
+    });
+
+    setLoading(false);
 
     if (error) {
       Alert.alert("Errore", error.message);
@@ -39,8 +46,6 @@ export default function UpdatePassword() {
       Alert.alert("Password aggiornata", "Ora puoi fare il login");
       router.replace("/login");
     }
-
-    setLoading(false);
   };
 
   return (
