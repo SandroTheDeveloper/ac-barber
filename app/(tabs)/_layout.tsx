@@ -1,14 +1,17 @@
 import { Tabs } from "expo-router";
-import React from "react";
-
+import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+import { useColorScheme } from "@/hooks/use-color-scheme";
+import { Colors } from "@/constants/theme";
 import { HapticTab } from "@/components/haptic-tab";
 import { IconSymbol } from "@/components/ui/icon-symbol";
-import { Colors } from "@/constants/theme";
-import { useColorScheme } from "@/hooks/use-color-scheme";
-import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+import { useUserRole } from "@/hooks/use-role-user";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  const { role, loading } = useUserRole();
+
+  if (loading) return null; // evita flicker
+  console.log("ROLE TAB:", role);
 
   return (
     <Tabs
@@ -27,6 +30,7 @@ export default function TabLayout() {
           ),
         }}
       />
+
       <Tabs.Screen
         name="explore"
         options={{
@@ -36,6 +40,7 @@ export default function TabLayout() {
           ),
         }}
       />
+
       <Tabs.Screen
         name="profilo"
         options={{
@@ -45,13 +50,16 @@ export default function TabLayout() {
           ),
         }}
       />
+
+      {/* 🔐 SOLO ADMIN */}
       <Tabs.Screen
         name="management"
         options={{
           title: "Gestione clienti",
           tabBarIcon: ({ color }) => (
-            <FontAwesome5 name="user" size={24} color={color} />
+            <FontAwesome5 name="users-cog" size={24} color={color} />
           ),
+          href: role === "ADMIN" ? undefined : null,
         }}
       />
     </Tabs>
