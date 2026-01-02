@@ -91,8 +91,8 @@ export function BookingCalendar() {
 
       {/* Griglia */}
       <View style={styles.grid}>
-        {giorni.map((g) => (
-          <ThemedText key={g} style={styles.dayHeader}>
+        {giorni.map((g, i) => (
+          <ThemedText key={`${g}-${i}`} style={styles.dayHeader}>
             {g}
           </ThemedText>
         ))}

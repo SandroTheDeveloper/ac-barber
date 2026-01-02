@@ -11,7 +11,6 @@ export default function TabLayout() {
   const { role, loading } = useUserRole();
 
   if (loading) return null; // evita flicker
-  console.log("ROLE TAB:", role);
 
   return (
     <Tabs

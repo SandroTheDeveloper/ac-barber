@@ -3,6 +3,7 @@ import { View, TextInput, Pressable, StyleSheet, Alert } from "react-native";
 import { supabase } from "./utils/supabase";
 import { useRouter } from "expo-router";
 import { ThemedText } from "@/components/themed-text";
+import { useUserRole } from "@/hooks/use-role-user";
 
 export default function CreateAccount() {
   const [firstName, setFirstName] = useState("");
@@ -11,15 +12,25 @@ export default function CreateAccount() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
+  const { role, loading } = useUserRole();
+  const DEFAULT_PASSWORD = "esplosionecapelli26";
+  const finalPassword = role === "ADMIN" ? DEFAULT_PASSWORD : password;
 
   const handleSubmit = async () => {
-    if (!email || !password)
-      return Alert.alert("Email e password obbligatorie");
+    if (!email) {
+      Alert.alert("Email obbligatoria");
+      return;
+    }
+
+    if (role !== "ADMIN" && !password) {
+      Alert.alert("Password obbligatoria");
+      return;
+    }
 
     // 1️⃣ CREA L’UTENTE AUTH
     const { data, error } = await supabase.auth.signUp({
       email,
-      password,
+      password: finalPassword,
     });
 
     if (error) {
@@ -69,18 +80,18 @@ export default function CreateAccount() {
         style={styles.input}
         keyboardType="email-address"
       />
-      <TextInput
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        style={styles.input}
-        secureTextEntry
-      />
+      {role !== "ADMIN" && (
+        <TextInput
+          placeholder="Password"
+          value={password}
+          onChangeText={setPassword}
+          style={styles.input}
+          secureTextEntry
+        />
+      )}
 
       <Pressable style={styles.button} onPress={handleSubmit}>
-        <View>
-          <ThemedText>{"Registrati"} </ThemedText>
-        </View>
+        <View>{role === "ADMIN" ? "Aggiungi" : "Registrati"}</View>
       </Pressable>
     </View>
   );

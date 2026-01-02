@@ -16,6 +16,7 @@ import {
   deleteClient,
   Client,
 } from "@/app/utils/client";
+import CreateAccount from "../createAccount";
 
 export default function ClientsScreen() {
   const [clients, setClients] = useState<Client[]>([]);
@@ -79,79 +80,7 @@ export default function ClientsScreen() {
     loadClients();
   };
 
-  return (
-    <View style={styles.container}>
-      <ThemedText type="title">
-        {editingId ? "Modifica Cliente" : "Nuovo Cliente"}
-      </ThemedText>
-
-      <TextInput
-        placeholder="Nome"
-        value={firstName}
-        onChangeText={setFirstName}
-        style={styles.input}
-      />
-      <TextInput
-        placeholder="Cognome"
-        value={lastName}
-        onChangeText={setLastName}
-        style={styles.input}
-      />
-      <TextInput
-        placeholder="Telefono"
-        value={phone}
-        onChangeText={setPhone}
-        style={styles.input}
-        keyboardType="phone-pad"
-      />
-      <TextInput
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-        style={styles.input}
-        keyboardType="email-address"
-      />
-      <TextInput
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        style={styles.input}
-        keyboardType="visible-password"
-      />
-
-      <Pressable style={styles.button} onPress={handleSubmit}>
-        <ThemedText style={styles.buttonText}>
-          {editingId ? "Aggiorna" : "Aggiungi"}
-        </ThemedText>
-      </Pressable>
-
-      <FlatList
-        data={clients}
-        keyExtractor={(item) => item.id!.toString()}
-        renderItem={({ item }) => (
-          <View style={styles.clientRow}>
-            <ThemedText>
-              {item.first_name} {item.last_name} | {item.phone} | {item.email}
-            </ThemedText>
-            <View style={styles.rowButtons}>
-              <Pressable
-                onPress={() => handleEdit(item)}
-                style={styles.editButton}
-              >
-                <ThemedText>Modifica</ThemedText>
-              </Pressable>
-              <Pressable
-                onPress={() => handleDelete(item.id!)}
-                style={styles.deleteButton}
-              >
-                <ThemedText>Elimina</ThemedText>
-              </Pressable>
-            </View>
-          </View>
-        )}
-      />
-    </View>
-  );
+  return <CreateAccount></CreateAccount>;
 }
 
 const styles = StyleSheet.create({
