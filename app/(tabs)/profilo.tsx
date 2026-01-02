@@ -1,13 +1,15 @@
 import { Image } from "expo-image";
-import { Platform, StyleSheet } from "react-native";
+import { Platform, Pressable, StyleSheet, View } from "react-native";
 
 import ParallaxScrollView from "@/components/parallax-scroll-view";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 
 export default function MyProfile() {
+  const router = useRouter();
+
   return (
     <ParallaxScrollView
       headerBackgroundColor={{
@@ -22,11 +24,41 @@ export default function MyProfile() {
           style={styles.reactLogo}
         />
       }
-    ></ParallaxScrollView>
+    >
+      <Pressable
+        style={[styles.button]}
+        onPress={() => router.replace("/prenotazioni")}
+      >
+        <ThemedText>Le mie prenotazioni</ThemedText>
+      </Pressable>
+
+      <Pressable
+        style={[styles.button]}
+        onPress={() => router.replace("/reset-password")}
+      >
+        <ThemedText>Reset password</ThemedText>
+      </Pressable>
+    </ParallaxScrollView>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    padding: 20,
+  },
+  button: {
+    backgroundColor: "blue",
+    padding: 12,
+    borderRadius: 8,
+    alignItems: "center",
+    marginTop: 10,
+  },
+  buttonText: {
+    color: "#fff",
+    fontWeight: "600",
+  },
   titleContainer: {
     flexDirection: "row",
     alignItems: "center",

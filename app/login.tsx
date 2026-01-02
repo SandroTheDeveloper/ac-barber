@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { View, TextInput, Pressable, Text, StyleSheet } from "react-native";
 import { supabase } from "./utils/supabase";
+import { useRouter } from "expo-router";
 
 export default function LoginScreen() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -63,6 +65,13 @@ export default function LoginScreen() {
           {loading ? "Accesso..." : "Login"}
         </Text>
       </Pressable>
+
+      <Text
+        style={styles.forgotPassword}
+        onPress={() => router.replace("/reset-password")}
+      >
+        {"Password dimenticata?"}
+      </Text>
     </View>
   );
 }
@@ -101,5 +110,9 @@ const styles = StyleSheet.create({
     color: "red",
     marginBottom: 10,
     textAlign: "center",
+  },
+  forgotPassword: {
+    color: "black",
+    marginTop: 10,
   },
 });
