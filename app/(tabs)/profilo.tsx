@@ -27,14 +27,14 @@ export default function MyProfile() {
     >
       <Pressable
         style={[styles.button]}
-        onPress={() => router.replace("/prenotazioni")}
+        onPress={() => router.push("/prenotazioni")}
       >
         <ThemedText>Le mie prenotazioni</ThemedText>
       </Pressable>
 
       <Pressable
         style={[styles.button]}
-        onPress={() => router.replace("/reset-password")}
+        onPress={() => router.push("/reset-password")}
       >
         <ThemedText>Reset password</ThemedText>
       </Pressable>

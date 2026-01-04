@@ -86,12 +86,16 @@ export default function ClientsScreen() {
     <View>
       <Pressable
         style={styles.button}
-        onPress={() => {
-          console.log("Premuto Aggiungi cliente");
-          router.push("/createAccount");
-        }}
+        onPress={() => router.push("/createAccount")}
       >
         <ThemedText>Aggiungi un cliente</ThemedText>
+      </Pressable>
+
+      <Pressable
+        style={styles.button}
+        onPress={() => router.push("/getClients")}
+      >
+        <ThemedText>Gestisci clienti</ThemedText>
       </Pressable>
     </View>
   );
