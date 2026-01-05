@@ -1,12 +1,23 @@
 import { useState } from "react";
 import { View, TextInput, Pressable, Text, StyleSheet } from "react-native";
 import { supabase } from "./utils/supabase";
-import { useRouter } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 
 export default function Prenotazioni() {
   const router = useRouter();
 
-  return <View></View>;
+  return (
+    <>
+      {" "}
+      <Stack.Screen
+        options={{
+          title: "Torna indietro",
+          headerBackTitle: "Indietro", // iOS
+        }}
+      />
+      <View></View>
+    </>
+  );
 }
 
 const styles = StyleSheet.create({

@@ -11,7 +11,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { ThemedText } from "@/components/themed-text";
 import { getClients, deleteClient, Client } from "@/app/utils/client";
-import { useFocusEffect, useRouter } from "expo-router";
+import { Stack, useFocusEffect, useRouter } from "expo-router";
 
 export default function ClientsScreen() {
   const PAGE_SIZE = 10;
@@ -122,61 +122,69 @@ export default function ClientsScreen() {
   );
 
   return (
-    <View style={styles.container}>
-      <ThemedText type="title">Lista Clienti</ThemedText>
-
-      {/* 🔍 Search */}
-      <TextInput
-        placeholder="Cerca per nome, email o numero telefonico"
-        value={search}
-        onChangeText={(text) => {
-          setSearch(text);
-          setCurrentPage(0); // reset pagina se cambia filtro
+    <>
+      <Stack.Screen
+        options={{
+          title: "Torna indietro",
+          headerBackTitle: "Indietro", // iOS
         }}
-        style={styles.search}
       />
+      <View style={styles.container}>
+        <ThemedText type="title">Lista Clienti</ThemedText>
 
-      {/* 🔹 Lista clienti */}
-      <FlatList
-        data={paginatedClients}
-        keyExtractor={(item) => item.id!}
-        renderItem={renderItem}
-        contentContainerStyle={{ paddingBottom: 24 }}
-        ListEmptyComponent={
-          <ThemedText style={{ marginTop: 20 }}>
-            Nessun cliente trovato
-          </ThemedText>
-        }
-      />
+        {/* 🔍 Search */}
+        <TextInput
+          placeholder="Cerca per nome, email o numero telefonico"
+          value={search}
+          onChangeText={(text) => {
+            setSearch(text);
+            setCurrentPage(0); // reset pagina se cambia filtro
+          }}
+          style={styles.search}
+        />
 
-      {/* 🔹 Controlli paginazione */}
-      {totalPages > 1 && (
-        <View style={styles.pagination}>
-          <Pressable
-            disabled={currentPage === 0}
-            onPress={() => setCurrentPage((p) => p - 1)}
-            style={[styles.pageBtn, currentPage === 0 && { opacity: 0.5 }]}
-          >
-            <ThemedText>{"<"} Indietro</ThemedText>
-          </Pressable>
+        {/* 🔹 Lista clienti */}
+        <FlatList
+          data={paginatedClients}
+          keyExtractor={(item) => item.id!}
+          renderItem={renderItem}
+          contentContainerStyle={{ paddingBottom: 24 }}
+          ListEmptyComponent={
+            <ThemedText style={{ marginTop: 20 }}>
+              Nessun cliente trovato
+            </ThemedText>
+          }
+        />
 
-          <ThemedText>
-            Pagina {currentPage + 1} di {totalPages}
-          </ThemedText>
+        {/* 🔹 Controlli paginazione */}
+        {totalPages > 1 && (
+          <View style={styles.pagination}>
+            <Pressable
+              disabled={currentPage === 0}
+              onPress={() => setCurrentPage((p) => p - 1)}
+              style={[styles.pageBtn, currentPage === 0 && { opacity: 0.5 }]}
+            >
+              <ThemedText>{"<"} Indietro</ThemedText>
+            </Pressable>
 
-          <Pressable
-            disabled={currentPage + 1 >= totalPages}
-            onPress={() => setCurrentPage((p) => p + 1)}
-            style={[
-              styles.pageBtn,
-              currentPage + 1 >= totalPages && { opacity: 0.5 },
-            ]}
-          >
-            <ThemedText>Avanti {">"}</ThemedText>
-          </Pressable>
-        </View>
-      )}
-    </View>
+            <ThemedText>
+              Pagina {currentPage + 1} di {totalPages}
+            </ThemedText>
+
+            <Pressable
+              disabled={currentPage + 1 >= totalPages}
+              onPress={() => setCurrentPage((p) => p + 1)}
+              style={[
+                styles.pageBtn,
+                currentPage + 1 >= totalPages && { opacity: 0.5 },
+              ]}
+            >
+              <ThemedText>Avanti {">"}</ThemedText>
+            </Pressable>
+          </View>
+        )}
+      </View>
+    </>
   );
 }
 

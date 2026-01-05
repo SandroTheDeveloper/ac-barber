@@ -2,6 +2,7 @@ import { useState } from "react";
 import { View, TextInput, Pressable, StyleSheet, Alert } from "react-native";
 import { supabase } from "@/app/utils/supabase";
 import { ThemedText } from "@/components/themed-text";
+import { Stack } from "expo-router";
 
 export default function ResetPassword() {
   const [email, setEmail] = useState("");
@@ -31,26 +32,35 @@ export default function ResetPassword() {
   };
 
   return (
-    <View style={styles.container}>
-      <ThemedText type="title">Inserisci la tua mail</ThemedText>
-
-      <TextInput
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-        style={styles.input}
-        autoCapitalize="none"
-        keyboardType="email-address"
+    <>
+      {" "}
+      <Stack.Screen
+        options={{
+          title: "Torna indietro",
+          headerBackTitle: "Indietro", // iOS
+        }}
       />
+      <View style={styles.container}>
+        <ThemedText type="title">Inserisci la tua mail</ThemedText>
 
-      <Pressable
-        style={[styles.button, loading && { opacity: 0.6 }]}
-        onPress={handleReset}
-        disabled={loading}
-      >
-        <ThemedText>{loading ? "Invio..." : "Ricevi link"}</ThemedText>
-      </Pressable>
-    </View>
+        <TextInput
+          placeholder="Email"
+          value={email}
+          onChangeText={setEmail}
+          style={styles.input}
+          autoCapitalize="none"
+          keyboardType="email-address"
+        />
+
+        <Pressable
+          style={[styles.button, loading && { opacity: 0.6 }]}
+          onPress={handleReset}
+          disabled={loading}
+        >
+          <ThemedText>{loading ? "Invio..." : "Ricevi link"}</ThemedText>
+        </Pressable>
+      </View>
+    </>
   );
 }
 

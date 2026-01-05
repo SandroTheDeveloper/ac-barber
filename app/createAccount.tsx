@@ -8,7 +8,7 @@ import {
   Platform,
 } from "react-native";
 import { supabase } from "./utils/supabase";
-import { useRouter } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import { ThemedText } from "@/components/themed-text";
 import { useUserRole } from "@/hooks/use-role-user";
 
@@ -97,47 +97,57 @@ export default function CreateAccount() {
   };
 
   return (
-    <View style={styles.container}>
-      <TextInput
-        placeholder="Nome"
-        value={firstName}
-        onChangeText={setFirstName}
-        style={styles.input}
+    <>
+      <Stack.Screen
+        options={{
+          title: "Torna indietro",
+          headerBackTitle: "Indietro", // iOS
+        }}
       />
-      <TextInput
-        placeholder="Cognome"
-        value={lastName}
-        onChangeText={setLastName}
-        style={styles.input}
-      />
-      <TextInput
-        placeholder="Telefono"
-        value={phone}
-        onChangeText={setPhone}
-        style={styles.input}
-        keyboardType="phone-pad"
-      />
-      <TextInput
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-        style={styles.input}
-        keyboardType="email-address"
-      />
-      {role !== "ADMIN" && (
+      <View style={styles.container}>
         <TextInput
-          placeholder="Password"
-          value={password}
-          onChangeText={setPassword}
+          placeholder="Nome"
+          value={firstName}
+          onChangeText={setFirstName}
           style={styles.input}
-          secureTextEntry
         />
-      )}
+        <TextInput
+          placeholder="Cognome"
+          value={lastName}
+          onChangeText={setLastName}
+          style={styles.input}
+        />
+        <TextInput
+          placeholder="Telefono"
+          value={phone}
+          onChangeText={setPhone}
+          style={styles.input}
+          keyboardType="phone-pad"
+        />
+        <TextInput
+          placeholder="Email"
+          value={email}
+          onChangeText={setEmail}
+          style={styles.input}
+          keyboardType="email-address"
+        />
+        {role !== "ADMIN" && (
+          <TextInput
+            placeholder="Password"
+            value={password}
+            onChangeText={setPassword}
+            style={styles.input}
+            secureTextEntry
+          />
+        )}
 
-      <Pressable style={styles.button} onPress={handleSubmit}>
-        <ThemedText>{role === "ADMIN" ? "Aggiungi" : "Registrati"}</ThemedText>
-      </Pressable>
-    </View>
+        <Pressable style={styles.button} onPress={handleSubmit}>
+          <ThemedText>
+            {role === "ADMIN" ? "Aggiungi" : "Registrati"}
+          </ThemedText>
+        </Pressable>
+      </View>
+    </>
   );
 }
 
