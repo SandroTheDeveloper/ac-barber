@@ -1,70 +1,30 @@
 // screens/ClientsScreen.tsx
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { View, Pressable, FlatList, StyleSheet } from "react-native";
 import { ThemedText } from "@/components/themed-text";
-import {
-  addClient,
-  getClients,
-  updateClient,
-  deleteClient,
-  Client,
-} from "@/app/utils/client";
+import { getClients, deleteClient, Client } from "@/app/utils/client";
+import { useFocusEffect, useRouter } from "expo-router";
 
 export default function GetClients() {
   const [clients, setClients] = useState<Client[]>([]);
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [editingId, setEditingId] = useState<string | null>(null);
+  const router = useRouter();
 
   const loadClients = async () => {
     const data = await getClients();
     setClients(data);
   };
 
-  useEffect(() => {
-    loadClients();
-  }, []);
-
-  const handleSubmit = async () => {
-    if (!firstName || !lastName) return alert("Nome e Cognome obbligatori");
-
-    if (editingId) {
-      await updateClient(editingId, {
-        first_name: firstName,
-        last_name: lastName,
-        phone,
-        email,
-        password,
-      });
-      setEditingId(null);
-    } else {
-      await addClient({
-        first_name: firstName,
-        last_name: lastName,
-        phone,
-        email,
-        password,
-      });
-    }
-
-    setFirstName("");
-    setLastName("");
-    setPhone("");
-    setEmail("");
-    setPassword("");
-    loadClients();
-  };
+  useFocusEffect(
+    useCallback(() => {
+      loadClients();
+    }, [])
+  );
 
   const handleEdit = (client: Client) => {
-    setEditingId(client.id!);
-    setFirstName(client.first_name);
-    setLastName(client.last_name);
-    setPhone(client.phone || "");
-    setEmail(client.email || "");
-    setPassword(client.password || "");
+    router.push({
+      pathname: "/edit-client",
+      params: { id: client.id },
+    });
   };
 
   const handleDelete = async (id: string) => {
