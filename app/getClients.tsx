@@ -1,13 +1,6 @@
 // screens/ClientsScreen.tsx
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  TextInput,
-  Pressable,
-  FlatList,
-  Text,
-  StyleSheet,
-} from "react-native";
+import { View, Pressable, FlatList, StyleSheet } from "react-native";
 import { ThemedText } from "@/components/themed-text";
 import {
   addClient,
