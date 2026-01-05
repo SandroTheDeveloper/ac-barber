@@ -91,7 +91,7 @@ export default function CreateAccount() {
       )}
 
       <Pressable style={styles.button} onPress={handleSubmit}>
-        <View>{role === "ADMIN" ? "Aggiungi" : "Registrati"}</View>
+        <ThemedText>{role === "ADMIN" ? "Aggiungi" : "Registrati"}</ThemedText>
       </Pressable>
     </View>
   );
