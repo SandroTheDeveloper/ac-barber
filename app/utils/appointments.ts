@@ -1,6 +1,7 @@
 import { supabase } from "@/app/utils/supabase";
 import { Appointment } from "../getAppointments";
 
+// CREATE
 export async function createAppointment({
   clientId,
   date,
@@ -63,4 +64,18 @@ export async function getAppointments(): Promise<Appointment[]> {
       status: a.status,
       client: a.client ?? null,
     }));
+}
+// DELETE
+export async function deleteAppointments(id: string): Promise<boolean> {
+  const { error } = await supabase
+    .from("appointments")
+    .delete()
+    .eq('id', id);
+
+  if (error) {
+    console.error(error);
+    return false;
+  }
+
+  return true;
 }
