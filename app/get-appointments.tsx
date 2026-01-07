@@ -10,16 +10,9 @@ import {
 } from "react-native";
 import { ThemedText } from "@/components/themed-text";
 import { deleteAppointments, getAppointments } from "./utils/appointments";
-import {
-  router,
-  Stack,
-  useFocusEffect,
-  useLocalSearchParams,
-} from "expo-router";
+import { router, Stack, useFocusEffect } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { formatAppointmentDate } from "./utils/helper";
-import { deleteClient } from "./utils/client";
-import { supabase } from "./utils/supabase";
 
 export type Appointment = {
   id: string;
@@ -93,14 +86,12 @@ export default function AppointmentsScreen() {
       (c) =>
         c.client?.first_name.toLowerCase().includes(q) ||
         c.client?.last_name.toLowerCase().includes(q) ||
-        (c.service?.toLowerCase().includes(q) ?? false) ||
-        (c.appointment_date?.toLowerCase().includes(q) ?? false) ||
-        (c.appointment_time?.toLowerCase().includes(q) ?? false)
+        (c.service?.toLowerCase().includes(q) ?? false)
     );
   }, [appointments, search]);
 
   // 🔹 Pagina corrente
-  const paginatedClients = filteredAppointments.slice(
+  const paginatedAppointments = filteredAppointments.slice(
     currentPage * PAGE_SIZE,
     currentPage * PAGE_SIZE + PAGE_SIZE
   );
@@ -183,7 +174,7 @@ export default function AppointmentsScreen() {
           style={styles.search}
         />
         <FlatList
-          data={paginatedClients}
+          data={paginatedAppointments}
           keyExtractor={(item) => item.id!}
           renderItem={renderItem}
           contentContainerStyle={{ paddingBottom: 24 }}

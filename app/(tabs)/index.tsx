@@ -6,7 +6,6 @@ import { supabase } from "@/app/utils/supabase";
 import ParallaxScrollView from "@/components/parallax-scroll-view";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
-import { Link } from "expo-router";
 
 export default function HomeScreen() {
   const [fullName, setFullName] = useState<string | null>(null);

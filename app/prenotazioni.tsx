@@ -1,6 +1,4 @@
-import { useState } from "react";
-import { View, TextInput, Pressable, Text, StyleSheet } from "react-native";
-import { supabase } from "./utils/supabase";
+import { View, StyleSheet } from "react-native";
 import { Stack, useRouter } from "expo-router";
 
 export default function Prenotazioni() {
