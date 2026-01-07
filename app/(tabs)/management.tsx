@@ -10,21 +10,21 @@ export default function Managementcreen() {
     <View>
       <Pressable
         style={styles.button}
-        onPress={() => router.push("/createAccount")}
+        onPress={() => router.push("/create-account")}
       >
         <ThemedText>Aggiungi un cliente</ThemedText>
       </Pressable>
 
       <Pressable
         style={styles.button}
-        onPress={() => router.push("/getClients")}
+        onPress={() => router.push("/get-clients")}
       >
         <ThemedText>Gestisci clienti</ThemedText>
       </Pressable>
 
       <Pressable
         style={styles.button}
-        onPress={() => router.push("/getAppointments")}
+        onPress={() => router.push("/get-appointments")}
       >
         <ThemedText>Vedi appuntamenti</ThemedText>
       </Pressable>

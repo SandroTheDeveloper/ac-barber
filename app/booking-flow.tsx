@@ -9,11 +9,11 @@ import { useRouter } from "expo-router";
 import { supabase } from "@/app/utils/supabase";
 import { getBookedHours } from "./utils/appointments";
 
-type ModalScreenProps = {
+type BookingFlowProps = {
   onBackFromPeriod: () => void;
 };
 
-export default function ModalScreen({ onBackFromPeriod }: ModalScreenProps) {
+export default function BookingFlow({ onBackFromPeriod }: BookingFlowProps) {
   const { date } = useLocalSearchParams<{ date: string }>();
   const selectedDate = date ? new Date(decodeURIComponent(date)) : null;
 

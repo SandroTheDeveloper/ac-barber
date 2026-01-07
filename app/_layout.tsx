@@ -44,8 +44,8 @@ export default function RootLayout() {
         <Stack.Protected guard={!!isLoggedIn}>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen
-            name="modal"
-            options={{ presentation: "modal", title: "Torna al calendario" }}
+            name="booking-flow"
+            options={{ title: "Torna al calendario" }}
           />
         </Stack.Protected>
       </Stack>

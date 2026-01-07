@@ -1,5 +1,5 @@
 import { supabase } from "@/app/utils/supabase";
-import { Appointment } from "../getAppointments";
+import { Appointment } from "../get-appointments";
 
 // CREATE
 export async function createAppointment({

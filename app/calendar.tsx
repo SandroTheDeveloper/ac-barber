@@ -67,7 +67,7 @@ export function Calendar({ onSelectDate }: CalendarProps) {
     setSelectedDate(iso);
 
     onSelectDate(iso);
-    router.push(`/modal?date=${encodeURIComponent(iso)}`);
+    router.push(`/booking-flow?date=${encodeURIComponent(iso)}`);
   }
 
   return (

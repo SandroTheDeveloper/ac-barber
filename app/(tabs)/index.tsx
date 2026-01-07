@@ -59,16 +59,6 @@ export default function HomeScreen() {
           })}
         </ThemedText>
       </ThemedView>
-
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">
-              Titolo 2: clicca e appare la Modale
-            </ThemedText>
-          </Link.Trigger>
-        </Link>
-      </ThemedView>
     </ParallaxScrollView>
   );
 }

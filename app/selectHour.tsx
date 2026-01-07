@@ -121,10 +121,6 @@ export const SelectHour = forwardRef(
         {/* STEP 1 — SERVIZIO */}
         {!service && (
           <View>
-            <Pressable onPress={onBackFromService} style={styles.back}>
-              <ThemedText>← Indietro</ThemedText>
-            </Pressable>
-
             {(["TAGLIO", "BARBA", "TAGLIO+BARBA"] as Service[]).map((s) => (
               <Pressable
                 key={s}
