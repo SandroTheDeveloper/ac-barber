@@ -21,6 +21,13 @@ export default function ClientsScreen() {
       >
         <ThemedText>Gestisci clienti</ThemedText>
       </Pressable>
+
+      <Pressable
+        style={styles.button}
+        onPress={() => router.push("/getAppointments")}
+      >
+        <ThemedText>Vedi appuntamenti</ThemedText>
+      </Pressable>
     </View>
   );
 }

@@ -5,35 +5,12 @@ import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { Fonts } from "@/constants/theme";
-import { BookingCalendar } from "../calendar";
+import { Calendar } from "../calendar";
+import React from "react";
+import BookingScreen from "../booking-screen";
 
 export default function TabTwoScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: "#D0D0D0", dark: "#353636" }}
-      headerImage={
-        <IconSymbol
-          size={100}
-          color="#808080"
-          name="chevron.left.forwardslash.chevron.right"
-          style={styles.headerImage}
-        />
-      }
-    >
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText
-          type="title"
-          style={{
-            fontFamily: Fonts.rounded,
-          }}
-        >
-          Disponibilità
-        </ThemedText>
-      </ThemedView>
-
-      <BookingCalendar />
-    </ParallaxScrollView>
-  );
+  return <BookingScreen />;
 }
 
 const styles = StyleSheet.create({

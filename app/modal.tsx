@@ -1,12 +1,13 @@
 import { useLocalSearchParams } from "expo-router";
-import { Pressable, StyleSheet, View } from "react-native";
-import { useRef, useState } from "react";
+import { Pressable, StyleSheet, View, Alert } from "react-native";
+import { useEffect, useRef, useState } from "react";
 
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { SelectHour, Service, Period } from "./selectHour";
 import { useRouter } from "expo-router";
 import { supabase } from "@/app/utils/supabase";
+import { getBookedHours } from "./utils/appointments";
 
 type ModalScreenProps = {
   onBackFromPeriod: () => void;
@@ -20,9 +21,69 @@ export default function ModalScreen({ onBackFromPeriod }: ModalScreenProps) {
   const [period, setPeriod] = useState<Period | null>(null);
   const [hour, setHour] = useState<string | null>(null);
   const [confirmed, setConfirmed] = useState(false);
-  const router = useRouter();
 
+  const router = useRouter();
   const selectHourRef = useRef<{ onBackFromPeriod: () => void }>(null);
+  const [bookedHours, setBookedHours] = useState<string[]>([]);
+
+  // converte date in YYYY-MM-DD
+  const toDateOnly = (date: Date) => date.toISOString().split("T")[0];
+
+  useEffect(() => {
+    if (!selectedDate) return;
+
+    getBookedHours(toDateOnly(selectedDate)).then(setBookedHours);
+  }, [selectedDate]);
+
+  /* =======================
+     FUNZIONE SALVATAGGIO
+     ======================= */
+  const handleConfirm = async () => {
+    if (!selectedDate || !service || !period || !hour) {
+      Alert.alert("Errore", "Seleziona giorno, servizio, periodo e ora");
+      return;
+    }
+
+    try {
+      const {
+        data: { user },
+        error: authError,
+      } = await supabase.auth.getUser();
+
+      if (authError || !user) {
+        Alert.alert("Errore", "Impossibile identificare l'utente");
+        return;
+      }
+
+      console.log("Sto salvando prenotazione...", {
+        client_id: user.id,
+        appointment_date: toDateOnly(selectedDate),
+        appointment_time: hour,
+        service,
+        period,
+        status: "CONFIRMED",
+      });
+
+      const { data, error } = await supabase.from("appointments").insert([
+        {
+          client_id: user.id, // <-- qui aggiungi l'ID del cliente
+          appointment_date: toDateOnly(selectedDate),
+          appointment_time: hour,
+          service,
+          period,
+          status: "CONFIRMED",
+        },
+      ]);
+
+      if (error) throw error;
+
+      console.log("Prenotazione salvata:", data);
+      setConfirmed(true);
+    } catch (err) {
+      console.error("Errore salvataggio prenotazione:", err);
+      Alert.alert("Errore", "Impossibile salvare la prenotazione");
+    }
+  };
 
   /* =======================
      STEP FINALE DI CONFERMA
@@ -62,28 +123,26 @@ export default function ModalScreen({ onBackFromPeriod }: ModalScreenProps) {
       {selectedDate && (
         <ThemedText>📅 {selectedDate.toLocaleDateString("it-IT")}</ThemedText>
       )}
-
       {service && <ThemedText>✂️ {service}</ThemedText>}
       {period && <ThemedText>🌤️ {period}</ThemedText>}
       {hour && <ThemedText>⏰ {hour}</ThemedText>}
 
       {service && period && hour && (
-        <>
-          <View style={{ flexDirection: "row", gap: 12, marginTop: 12 }}>
-            <Pressable style={styles.button} onPress={() => setConfirmed(true)}>
-              <ThemedText>Conferma prenotazione</ThemedText>
-            </Pressable>
-            <Pressable
-              onPress={() => selectHourRef.current?.onBackFromPeriod()}
-              style={styles.button}
-            >
-              <ThemedText>← Indietro</ThemedText>
-            </Pressable>
-          </View>
-        </>
+        <View style={{ flexDirection: "row", gap: 12, marginTop: 12 }}>
+          <Pressable style={styles.button} onPress={handleConfirm}>
+            <ThemedText>Conferma prenotazione</ThemedText>
+          </Pressable>
+          <Pressable
+            onPress={() => selectHourRef.current?.onBackFromPeriod()}
+            style={styles.button}
+          >
+            <ThemedText>← Indietro</ThemedText>
+          </Pressable>
+        </View>
       )}
 
       <SelectHour
+        bookedHours={bookedHours}
         ref={selectHourRef}
         service={service}
         period={period}
@@ -123,10 +182,6 @@ const styles = StyleSheet.create({
     height: 50,
     alignItems: "center",
     justifyContent: "center",
-  },
-  secondaryButton: {
-    marginTop: 24,
-    opacity: 0.7,
   },
   summary: {
     marginTop: 8,

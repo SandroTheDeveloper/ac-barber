@@ -6,7 +6,11 @@ import { useRouter } from "expo-router";
 
 const giorni = ["L", "M", "M", "G", "V", "S", "D"];
 
-export function BookingCalendar() {
+type CalendarProps = {
+  onSelectDate: (date: string) => void;
+};
+
+export function Calendar({ onSelectDate }: CalendarProps) {
   const router = useRouter();
   const TODAY = new Date();
   TODAY.setHours(0, 0, 0, 0);
@@ -62,7 +66,7 @@ export function BookingCalendar() {
     const iso = date.toISOString();
     setSelectedDate(iso);
 
-    // apri la modale passando la data come query param
+    onSelectDate(iso);
     router.push(`/modal?date=${encodeURIComponent(iso)}`);
   }
 

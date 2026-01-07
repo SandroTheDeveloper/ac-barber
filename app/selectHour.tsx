@@ -9,6 +9,7 @@ type SelectHourProps = {
   service: Service | null;
   period: Period | null;
   selectedHour?: string;
+  bookedHours: string[];
 
   onSelectService: (service: Service) => void;
   onSelectPeriod: (period: Period) => void;
@@ -19,12 +20,54 @@ type SelectHourProps = {
   onBackFromHour: () => void;
 };
 
+const toMinutes = (time: string) => {
+  const [h, m] = time.split(":").map(Number);
+  return h * 60 + m;
+};
+
+const getServiceDuration = (service: Service) => {
+  switch (service) {
+    case "BARBA":
+      return 30;
+    case "TAGLIO":
+    case "TAGLIO+BARBA":
+      return 60;
+    default:
+      return 0;
+  }
+};
+
+const interval = 15;
+
+const getBlockedSlots = (bookedHours: string[], service: Service): string[] => {
+  const duration = getServiceDuration(service);
+  const slotsToBlock = duration / interval;
+
+  const blocked = new Set<string>();
+
+  bookedHours.forEach((start) => {
+    const startMinutes = toMinutes(start);
+
+    for (let i = 0; i < slotsToBlock; i++) {
+      const minutes = startMinutes + i * interval;
+      const h = Math.floor(minutes / 60)
+        .toString()
+        .padStart(2, "0");
+      const m = (minutes % 60).toString().padStart(2, "0");
+      blocked.add(`${h}:${m}`);
+    }
+  });
+
+  return Array.from(blocked);
+};
+
 export const SelectHour = forwardRef(
   (
     {
       service,
       period,
       selectedHour,
+      bookedHours,
       onSelectService,
       onSelectPeriod,
       onSelectHour,
@@ -71,6 +114,8 @@ export const SelectHour = forwardRef(
       onBackFromPeriod: handleBackFromPeriod,
     }));
 
+    const blockedSlots = service ? getBlockedSlots(bookedHours, service) : [];
+
     return (
       <View style={styles.container}>
         {/* STEP 1 — SERVIZIO */}
@@ -113,21 +158,33 @@ export const SelectHour = forwardRef(
         {service && period && (
           <View>
             {!selectedHour && (
-              <Pressable onPress={handleBackFromPeriod} style={styles.back}>
+              <Pressable onPress={onBackFromPeriod} style={styles.back}>
                 <ThemedText>← Indietro</ThemedText>
               </Pressable>
             )}
+
             {rows.map((row) => (
               <View key={row.join("-")} style={styles.row}>
                 {row.map((hour) => {
                   const isSelected = selectedHour === hour;
+                  const isBooked = blockedSlots.includes(hour);
                   return (
                     <Pressable
                       key={hour}
+                      disabled={isBooked}
                       onPress={() => onSelectHour(hour)}
-                      style={[styles.hour, isSelected && styles.selected]}
+                      style={[
+                        styles.hour,
+                        isSelected && styles.selected,
+                        isBooked && styles.booked,
+                      ]}
                     >
-                      <ThemedText style={isSelected && styles.selectedText}>
+                      <ThemedText
+                        style={[
+                          isSelected && styles.selectedText,
+                          isBooked && styles.bookedText,
+                        ]}
+                      >
                         {hour}
                       </ThemedText>
                     </Pressable>
@@ -173,4 +230,13 @@ const styles = StyleSheet.create({
   },
   selected: { backgroundColor: "green", borderColor: "green" },
   selectedText: { color: "#fff" },
+  booked: {
+    backgroundColor: "#eee",
+    borderColor: "#ccc",
+    opacity: 0.5,
+  },
+  bookedText: {
+    textDecorationLine: "line-through",
+    color: "#999",
+  },
 });
