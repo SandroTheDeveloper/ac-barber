@@ -3,7 +3,7 @@ import { View, Pressable, StyleSheet } from "react-native";
 import { ThemedText } from "@/components/themed-text";
 import { useRouter } from "expo-router";
 
-export default function ClientsScreen() {
+export default function Managementcreen() {
   const router = useRouter();
 
   return (

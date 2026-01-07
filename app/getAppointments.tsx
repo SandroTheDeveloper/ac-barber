@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { View, StyleSheet } from "react-native";
 import { ThemedText } from "@/components/themed-text";
-import { getAppointments } from "@/app/utils/appointments";
+import { getAppointments } from "./utils/appointments";
 
 export type Appointment = {
   id: string;
@@ -16,7 +16,7 @@ export type Appointment = {
   } | null;
 };
 
-export default function GetAppointments() {
+export default function AppointmentsScreen() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
 
   useEffect(() => {
@@ -30,6 +30,7 @@ export default function GetAppointments() {
           <ThemedText>
             {a.client?.first_name} {a.client?.last_name}
           </ThemedText>
+          <ThemedText>{a.service}</ThemedText>
           <ThemedText>
             {a.appointment_date} — {a.appointment_time}
           </ThemedText>

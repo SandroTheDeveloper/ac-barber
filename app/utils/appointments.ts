@@ -44,21 +44,23 @@ export async function getBookedHours(date: string) {
 export async function getAppointments(): Promise<Appointment[]> {
   const { data, error } = await supabase
     .from("appointments")
-  .select("*");
+    .select(`
+      *,
+      client:client_id (
+        first_name,
+        last_name,
+        phone
+      )
+    `)
 
+    if (error) throw error;
 
-  if (error) throw error;
-
-  // Supabase può restituire client come array (1 elemento) → prendiamo il primo
-  const appointments: Appointment[] = (data ?? []).map((a: any) => ({
-    id: a.id,
-    appointment_date: a.appointment_date,
-    appointment_time: a.appointment_time,
-    service: a.service,
-    status: a.status,
-    client: a.client ?? null,
-  }));
-
-  console.log("appointments debug", appointments); // per verificare
-  return appointments;
+    return (data ?? []).map((a: any) => ({
+      id: a.id,
+      appointment_date: a.appointment_date,
+      appointment_time: a.appointment_time,
+      service: a.service,
+      status: a.status,
+      client: a.client ?? null,
+    }));
 }
