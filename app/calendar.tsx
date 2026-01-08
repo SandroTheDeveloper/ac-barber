@@ -55,8 +55,8 @@ export function Calendar({ onSelectDate }: CalendarProps) {
     const end = new Date(maxDateObj);
 
     for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-      const dayOfWeek = d.getDay(); // 0 dom, 1 lun
-      if (dayOfWeek === 0 || dayOfWeek === 1) {
+      const dayOfWeek = d.getDay(); // 1 dom, 2 lun
+      if (dayOfWeek === 1 || dayOfWeek === 2) {
         const key = d.toISOString().split("T")[0];
         disabled[key] = { disabled: true, disableTouchEvent: true };
       }
