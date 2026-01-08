@@ -9,24 +9,30 @@ export default function Managementcreen() {
   return (
     <View>
       <Pressable
-        style={styles.button}
+        style={styles.card}
         onPress={() => router.push("/create-account")}
       >
-        <ThemedText>Aggiungi un cliente</ThemedText>
+        <ThemedText type="defaultSemiBold" style={styles.name}>
+          Aggiungi un cliente
+        </ThemedText>
       </Pressable>
 
       <Pressable
-        style={styles.button}
+        style={styles.card}
         onPress={() => router.push("/get-clients")}
       >
-        <ThemedText>Gestisci clienti</ThemedText>
+        <ThemedText type="defaultSemiBold" style={styles.name}>
+          Gestisci clienti
+        </ThemedText>
       </Pressable>
 
       <Pressable
-        style={styles.button}
+        style={styles.card}
         onPress={() => router.push("/get-appointments")}
       >
-        <ThemedText>Vedi appuntamenti</ThemedText>
+        <ThemedText type="defaultSemiBold" style={styles.name}>
+          Vedi appuntamenti
+        </ThemedText>
       </Pressable>
     </View>
   );
@@ -40,5 +46,21 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 12,
     alignItems: "center",
+  },
+  card: {
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 14,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: "#e0e0e0",
+    width: 300,
+    alignItems: "center",
+    justifyContent: "center",
+    display: "flex",
+  },
+  name: {
+    fontSize: 16,
+    marginBottom: 4,
   },
 });
