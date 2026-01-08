@@ -8,6 +8,7 @@ import {
   FlatList,
   Modal,
   ScrollView,
+  Platform,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Calendar } from "react-native-calendars";
@@ -247,6 +248,9 @@ export default function EditAppointment() {
      SAVE
      ======================= */
   const handleSave = async () => {
+    const message = `Sei sicuro di voler modificare l'appuntamento?`;
+    const updateSuccess = `Appuntamento aggiornato correttamente`;
+
     if (!clientId) {
       Alert.alert("Errore", "Seleziona un cliente");
       return;
@@ -281,9 +285,28 @@ export default function EditAppointment() {
     if (error) {
       Alert.alert("Errore", error.message);
     } else {
-      Alert.alert("Salvato", "Appuntamento aggiornato");
+      if (Platform.OS === "web") {
+        const confirmed = window.confirm(message);
+        if (!confirmed) return;
+        window.confirm(updateSuccess);
+        updateAndRefresh(id);
+      } else {
+        Alert.alert("Aggiorna appuntamento", message, [
+          { text: "Annulla", style: "cancel" },
+          {
+            text: "Aggiorna",
+            style: "destructive",
+            onPress: async () => updateAndRefresh(id),
+          },
+        ]);
+      }
+      Alert.alert("Salvato", updateSuccess);
       router.back();
     }
+  };
+
+  const updateAndRefresh = async (id: string) => {
+    router.replace("/get-appointments");
   };
 
   if (loading) return null;
