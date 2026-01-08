@@ -184,7 +184,7 @@ export default function AppointmentsScreen() {
           contentContainerStyle={{ paddingBottom: 24 }}
           ListEmptyComponent={
             <ThemedText style={{ marginTop: 20 }}>
-              Nessun cliente trovato
+              Non ci sono prenotazioni
             </ThemedText>
           }
         />

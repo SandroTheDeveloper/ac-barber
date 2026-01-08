@@ -62,6 +62,35 @@ export default function EditAppointment() {
   const [loading, setLoading] = useState(true);
   const [originalAppointmentTime, setOriginalAppointmentTime] = useState("");
 
+  const blockedSlots = service ? getBlockedSlots(bookedHours, service) : [];
+  const today = new Date();
+  const currentMonth = today.getMonth();
+  const currentYear = today.getFullYear();
+
+  const maxMonthDate = new Date(currentYear, currentMonth + 12, 1);
+
+  const [visibleMonth, setVisibleMonth] = useState({
+    month: currentMonth,
+    year: currentYear,
+  });
+
+  const disableArrowLeft =
+    visibleMonth.year < currentYear ||
+    (visibleMonth.year === currentYear && visibleMonth.month <= currentMonth);
+
+  const disableArrowRight =
+    visibleMonth.year > maxMonthDate.getFullYear() ||
+    (visibleMonth.year === maxMonthDate.getFullYear() &&
+      visibleMonth.month >= maxMonthDate.getMonth());
+
+  const minDate = new Date(currentYear, currentMonth, 1)
+    .toISOString()
+    .split("T")[0];
+
+  const maxDate = new Date(currentYear, currentMonth + 12, 31)
+    .toISOString()
+    .split("T")[0];
+
   /* =======================
      LOAD APPOINTMENT
      ======================= */
@@ -196,6 +225,7 @@ export default function EditAppointment() {
     }
     return hours;
   };
+  const slots = generateSlots();
 
   /* =======================
      FORMAT DATE
@@ -220,7 +250,7 @@ export default function EditAppointment() {
     } = {};
     const today = new Date();
     const startDate = new Date(today.getFullYear(), today.getMonth(), 1);
-    const endDate = new Date(today.getFullYear(), today.getMonth() + 3, 0);
+    const endDate = new Date(today.getFullYear(), today.getMonth() + 13, 0);
 
     for (
       let d = new Date(startDate);
@@ -230,8 +260,8 @@ export default function EditAppointment() {
       const dayOfWeek = d.getDay();
       const dateStr = d.toISOString().split("T")[0];
 
-      // Disabilita Domenica (0) e Lunedì (1)
-      if (dayOfWeek === 0 || dayOfWeek === 1) {
+      // Disabilita Domenica (1) e Lunedì (2)
+      if (dayOfWeek === 1 || dayOfWeek === 2) {
         disabled[dateStr] = { disabled: true, disableTouchEvent: true };
       }
 
@@ -310,9 +340,6 @@ export default function EditAppointment() {
   };
 
   if (loading) return null;
-
-  const slots = generateSlots();
-  const blockedSlots = service ? getBlockedSlots(bookedHours, service) : [];
 
   /* =======================
      RENDER
@@ -426,9 +453,18 @@ export default function EditAppointment() {
         >
           <View style={styles.calendarContainer}>
             <Calendar
+              current={`${visibleMonth.year}-${String(
+                visibleMonth.month + 1
+              ).padStart(2, "0")}-01`}
+              onMonthChange={(month) => {
+                setVisibleMonth({
+                  month: month.month - 1, // calendar usa 1–12
+                  year: month.year,
+                });
+              }}
               onDayPress={(selectedDay) => {
                 setDay(selectedDay.dateString);
-                setHour(""); // Reset hour quando cambi data
+                setHour("");
                 setCalendarOpen(false);
               }}
               markedDates={{
@@ -439,10 +475,13 @@ export default function EditAppointment() {
                 todayTextColor: "green",
                 arrowColor: "green",
               }}
-              minDate={new Date().toISOString().split("T")[0]}
+              minDate={minDate}
+              maxDate={maxDate}
+              disableArrowLeft={disableArrowLeft}
+              disableArrowRight={disableArrowRight}
+              enableSwipeMonths={false}
+              hideExtraDays
               firstDay={1}
-              enableSwipeMonths={true}
-              hideExtraDays={true}
             />
           </View>
         </Pressable>
