@@ -56,7 +56,11 @@ export default function AppointmentsScreen() {
 
   // 🔹 Elimina cliente con conferma
   const handleDelete = (id: string, appointment: Appointment) => {
-    const message = `Sei sicuro di voler l'appuntamento di ${appointment.client?.first_name} ${appointment.client?.last_name}?`;
+    const { day, hour } = formatAppointmentDate(
+      appointment.appointment_date,
+      appointment.appointment_time
+    );
+    const message = `Sei sicuro di voler eliminare l'appuntamento di ${appointment.client?.first_name} ${appointment.client?.last_name} del ${day} delle ore ${hour}?`;
 
     if (Platform.OS === "web") {
       const confirmed = window.confirm(message);
@@ -165,7 +169,7 @@ export default function AppointmentsScreen() {
         <ThemedText type="title">Lista Appuntamenti</ThemedText>
         {/* 🔍 Search */}
         <TextInput
-          placeholder="Cerca per nome o cognome"
+          placeholder="Cerca per nome, cognome o tipo di servizio"
           value={search}
           onChangeText={(text) => {
             setSearch(text);
