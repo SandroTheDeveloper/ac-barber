@@ -125,10 +125,11 @@ export default function EditAppointment() {
       }
 
       const client = appointmentData.clients;
+      const cleanHour = appointmentData.appointment_time.slice(0, 5);
 
       setDay(appointmentData.appointment_date);
-      setHour(appointmentData.appointment_time);
-      setOriginalAppointmentTime(appointmentData.appointment_time);
+      setHour(cleanHour);
+      setOriginalAppointmentTime(cleanHour);
       setService(appointmentData.service as Service);
       setClientId(appointmentData.client_id);
 
@@ -180,7 +181,7 @@ export default function EditAppointment() {
         // Escludi l'orario dell'appuntamento corrente
         const hours = data
           .filter((a) => a.id !== id)
-          .map((a) => a.appointment_time);
+          .map((a) => a.appointment_time.slice(0, 5));
         setBookedHours(hours);
       }
     };

@@ -7,12 +7,15 @@ import {
   Pressable,
   Platform,
   Alert,
+  Modal,
 } from "react-native";
 import { ThemedText } from "@/components/themed-text";
-import { deleteAppointments, getAppointments } from "./utils/appointments";
-import { router, Stack, useFocusEffect } from "expo-router";
+import { deleteAppointments } from "./utils/appointments";
+import { router, Stack } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { formatAppointmentDate } from "./utils/helper";
+import { Calendar } from "react-native-calendars";
+import { supabase } from "./utils/supabase";
 
 export type Appointment = {
   id: string;
@@ -27,6 +30,8 @@ export type Appointment = {
   } | null;
 };
 
+type DateFilter = "TODAY" | "DATE" | "PAST" | "ALL";
+
 export default function AppointmentsScreen() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [search, setSearch] = useState("");
@@ -34,17 +39,9 @@ export default function AppointmentsScreen() {
 
   const PAGE_SIZE = 10;
 
-  // 🔹 Carica clienti dal DB
-  const loadAppointments = async () => {
-    const data = await getAppointments();
-    setAppointments(data);
-  };
-
-  useFocusEffect(
-    useCallback(() => {
-      loadAppointments();
-    }, [])
-  );
+  const [dateFilter, setDateFilter] = useState<DateFilter>("TODAY");
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [calendarOpen, setCalendarOpen] = useState(false);
 
   // 🔹 Modifica cliente
   const handleEdit = (appointment: Appointment) => {
@@ -79,8 +76,10 @@ export default function AppointmentsScreen() {
   };
 
   const deleteAndRefresh = async (id: string) => {
-    await deleteAppointments(id);
-    loadAppointments();
+    const success = await deleteAppointments(id);
+    if (success) {
+      setAppointments((prev) => prev.filter((a) => a.id !== id));
+    }
   };
 
   // 🔍 Filtra clienti
@@ -154,8 +153,61 @@ export default function AppointmentsScreen() {
   };
 
   useEffect(() => {
-    getAppointments().then(setAppointments);
-  }, []);
+    const loadAppointments = async () => {
+      const today = new Date().toISOString().split("T")[0];
+      let query = supabase
+        .from("appointments")
+        .select(
+          `
+          id,
+          appointment_date,
+          appointment_time,
+          service,
+          status,
+          clients (
+            first_name,
+            last_name,
+            phone
+          )
+          `
+        )
+        .order("appointment_date", { ascending: true });
+
+      switch (dateFilter) {
+        case "TODAY":
+          query = query.eq("appointment_date", today);
+          break;
+        case "DATE":
+          if (selectedDate) {
+            query = query.eq("appointment_date", selectedDate);
+          }
+          break;
+        case "PAST":
+          query = query.lt("appointment_date", today);
+          break;
+        case "ALL":
+        default:
+          break;
+      }
+
+      const { data, error } = await query;
+
+      if (!error && data) {
+        const normalized: Appointment[] = data.map((a: any) => ({
+          id: a.id,
+          appointment_date: a.appointment_date,
+          appointment_time: a.appointment_time,
+          service: a.service,
+          status: a.status,
+          client: a.clients,
+        }));
+
+        setAppointments(normalized);
+      }
+    };
+
+    loadAppointments();
+  }, [dateFilter, selectedDate]);
 
   return (
     <>
@@ -177,6 +229,57 @@ export default function AppointmentsScreen() {
           }}
           style={styles.search}
         />
+        <View style={styles.filterRow}>
+          {[
+            { label: "TUTTI", value: "ALL" },
+            { label: "OGGI", value: "TODAY" },
+            { label: "SELEZIONA DATA", value: "DATE" },
+            { label: "PASSATI", value: "PAST" },
+          ].map((f) => (
+            <Pressable
+              key={f.value}
+              onPress={() => {
+                setDateFilter(f.value as DateFilter);
+                if (f.value !== "DATE") setSelectedDate(null);
+                if (f.value === "DATE") setCalendarOpen(true);
+              }}
+              style={[
+                styles.filterButton,
+                dateFilter === f.value && styles.filterButtonActive,
+              ]}
+            >
+              <ThemedText
+                style={dateFilter === f.value && styles.filterTextActive}
+              >
+                {f.label}
+              </ThemedText>
+            </Pressable>
+          ))}
+        </View>
+        <Modal
+          visible={calendarOpen}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setCalendarOpen(false)}
+        >
+          <Pressable
+            style={styles.modalOverlay}
+            onPress={() => setCalendarOpen(false)}
+          >
+            <View style={styles.calendarContainer}>
+              <Calendar
+                onDayPress={(day) => {
+                  setSelectedDate(day.dateString);
+                  setCalendarOpen(false);
+                }}
+                markedDates={
+                  selectedDate ? { [selectedDate]: { selected: true } } : {}
+                }
+                firstDay={1}
+              />
+            </View>
+          </Pressable>
+        </Modal>
         <FlatList
           data={paginatedAppointments}
           keyExtractor={(item) => item.id!}
@@ -296,5 +399,42 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 6,
     borderColor: "#555",
+  },
+  filterRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+    marginBottom: 12,
+  },
+
+  filterButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderWidth: 1,
+    borderRadius: 20,
+    borderColor: "#888",
+  },
+
+  filterButtonActive: {
+    backgroundColor: "green",
+    borderColor: "green",
+  },
+
+  filterTextActive: {
+    color: "#fff",
+    fontWeight: "600",
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  calendarContainer: {
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 10,
+    width: "90%",
   },
 });

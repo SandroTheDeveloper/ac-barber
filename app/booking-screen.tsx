@@ -21,14 +21,6 @@ export default function BookingScreen() {
       return;
     }
 
-    // qui puoi chiamare il backend per salvare la prenotazione
-    console.log("Prenotazione confermata:", {
-      date: selectedDate,
-      service,
-      period,
-      hour,
-    });
-
     Alert.alert(
       "Prenotazione confermata",
       `${service} il ${new Date(selectedDate).toLocaleDateString(

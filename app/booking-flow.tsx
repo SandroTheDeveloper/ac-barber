@@ -55,15 +55,6 @@ export default function BookingFlow({ onBackFromPeriod }: BookingFlowProps) {
         return;
       }
 
-      console.log("Sto salvando prenotazione...", {
-        client_id: user.id,
-        appointment_date: toDateOnly(selectedDate),
-        appointment_time: hour,
-        service,
-        period,
-        status: "CONFIRMED",
-      });
-
       const { data, error } = await supabase.from("appointments").insert([
         {
           client_id: user.id, // <-- qui aggiungi l'ID del cliente
@@ -77,7 +68,6 @@ export default function BookingFlow({ onBackFromPeriod }: BookingFlowProps) {
 
       if (error) throw error;
 
-      console.log("Prenotazione salvata:", data);
       setConfirmed(true);
     } catch (err) {
       console.error("Errore salvataggio prenotazione:", err);
