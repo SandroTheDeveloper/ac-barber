@@ -108,6 +108,8 @@ export default function AppointmentsScreen() {
       item.appointment_time
     );
 
+    const isPastAppointment = item.appointment_date < new Date().toDateString();
+
     return (
       <View style={styles.card}>
         <ThemedText type="defaultSemiBold" style={styles.name}>
@@ -135,15 +137,25 @@ export default function AppointmentsScreen() {
 
         <View style={styles.actions}>
           <Pressable
-            style={[styles.actionBtn, styles.editBtn]}
+            style={[
+              styles.actionBtn,
+              styles.editBtn,
+              isPastAppointment && styles.disabledBtn,
+            ]}
             onPress={() => handleEdit(item)}
+            disabled={isPastAppointment}
           >
             <ThemedText>Modifica</ThemedText>
           </Pressable>
 
           <Pressable
-            style={[styles.actionBtn, styles.deleteBtn]}
+            style={[
+              styles.actionBtn,
+              styles.editBtn,
+              isPastAppointment && styles.disabledBtn,
+            ]}
             onPress={() => handleDelete(item.id!, item)}
+            disabled={isPastAppointment}
           >
             <ThemedText style={{ color: "red" }}>Elimina</ThemedText>
           </Pressable>
@@ -436,5 +448,14 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 10,
     width: "90%",
+  },
+
+  disabledBtn: {
+    opacity: 0.5,
+    backgroundColor: "#f5f5f5",
+  },
+
+  disabledText: {
+    color: "#999",
   },
 });

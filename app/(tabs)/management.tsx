@@ -34,6 +34,15 @@ export default function Managementcreen() {
           Vedi appuntamenti
         </ThemedText>
       </Pressable>
+
+      <Pressable
+        style={styles.card}
+        onPress={() => router.push("/create-appointment")}
+      >
+        <ThemedText type="defaultSemiBold" style={styles.name}>
+          Aggiungi appuntamento
+        </ThemedText>
+      </Pressable>
     </View>
   );
 }
