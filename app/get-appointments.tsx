@@ -108,7 +108,8 @@ export default function AppointmentsScreen() {
       item.appointment_time
     );
 
-    const isPastAppointment = item.appointment_date < new Date().toDateString();
+    const today = new Date().toISOString().split("T")[0];
+    const isPastAppointment = item.appointment_date < today;
 
     return (
       <View style={styles.card}>
@@ -303,10 +304,6 @@ export default function AppointmentsScreen() {
             </ThemedText>
           }
         />
-
-        {appointments.length === 0 && (
-          <ThemedText>Nessuna prenotazione</ThemedText>
-        )}
 
         {/* 🔹 Controlli paginazione */}
         {totalPages > 1 && (
