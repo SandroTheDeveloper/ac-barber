@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { View, TextInput, Pressable, StyleSheet, Alert } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { supabase } from "@/app/utils/supabase";
 import { ThemedText } from "@/components/themed-text";
+import { supabase } from "./services/supabase";
 
 export default function UpdatePassword() {
   const { email } = useLocalSearchParams<{ email: string }>();

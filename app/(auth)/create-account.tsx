@@ -7,10 +7,10 @@ import {
   Alert,
   Platform,
 } from "react-native";
-import { supabase } from "./utils/supabase";
 import { Stack, useRouter } from "expo-router";
 import { ThemedText } from "@/components/themed-text";
 import { useUserRole } from "@/hooks/use-role-user";
+import { supabase } from "../services/supabase";
 
 export default function CreateAccount() {
   const [firstName, setFirstName] = useState("");

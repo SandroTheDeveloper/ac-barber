@@ -10,12 +10,12 @@ import {
   Modal,
 } from "react-native";
 import { ThemedText } from "@/components/themed-text";
-import { deleteAppointments } from "./utils/appointments";
 import { router, Stack } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { formatAppointmentDate } from "./utils/helper";
 import { Calendar } from "react-native-calendars";
-import { supabase } from "./utils/supabase";
+import { deleteAppointments } from "./services/appointments";
+import { formatAppointmentDate } from "./services/helper";
+import { supabase } from "./services/supabase";
 
 export type Appointment = {
   id: string;

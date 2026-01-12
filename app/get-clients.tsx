@@ -10,8 +10,9 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { ThemedText } from "@/components/themed-text";
-import { getClients, deleteClient, Client } from "@/app/utils/client";
 import { Stack, useFocusEffect, useRouter } from "expo-router";
+import { Client } from "./features/clients/types";
+import { deleteClient, getClients } from "./services/client";
 
 export default function ClientsScreen() {
   const PAGE_SIZE = 10;

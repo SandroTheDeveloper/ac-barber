@@ -6,8 +6,8 @@ import {
 } from "@react-navigation/native";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
-import { supabase } from "./utils/supabase";
 import { useColorScheme } from "@/hooks/use-color-scheme";
+import { supabase } from "./services/supabase";
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();

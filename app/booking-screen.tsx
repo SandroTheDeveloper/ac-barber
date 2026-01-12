@@ -2,7 +2,7 @@ import { useState, useRef } from "react";
 import { View, Alert, Pressable } from "react-native";
 import { ThemedText } from "@/components/themed-text";
 import { SelectHour, Service, Period } from "./selectHour";
-import { Calendar } from "./calendar";
+import { Calendar } from "./(appointments)/calendar";
 
 export default function BookingScreen() {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);

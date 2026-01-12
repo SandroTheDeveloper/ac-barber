@@ -13,10 +13,10 @@ import { ThemedText } from "@/components/themed-text";
 import { Calendar } from "react-native-calendars";
 import { useEffect, useMemo, useState } from "react";
 import { Appointment } from "./get-appointments";
-import { formatAppointmentDate } from "./utils/helper";
-import { supabase } from "./utils/supabase";
 import { Ionicons } from "@expo/vector-icons";
-import { deleteAppointments } from "./utils/appointments";
+import { supabase } from "./services/supabase";
+import { formatAppointmentDate } from "./services/helper";
+import { deleteAppointments } from "./services/appointments";
 
 type DateFilter = "TODAY" | "DATE" | "PAST" | "ALL";
 

@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { View, TextInput, Pressable, StyleSheet, Alert } from "react-native";
-import { supabase } from "@/app/utils/supabase";
 import { useRouter } from "expo-router";
 import { ThemedText } from "@/components/themed-text";
+import { supabase } from "../services/supabase";
 
 const DEFAULT_PASSWORD = "esplosionecapelli26";
 

@@ -12,9 +12,9 @@ import {
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Calendar } from "react-native-calendars";
-import { supabase } from "@/app/utils/supabase";
 import { ThemedText } from "@/components/themed-text";
-import { getBlockedSlots, getServices } from "./utils/helper";
+import { supabase } from "../services/supabase";
+import { getBlockedSlots, getServices } from "../services/helper";
 
 type Client = {
   id: string;
@@ -304,7 +304,7 @@ export default function EditAppointment() {
 
     const { error } = await supabase
       .from("appointments")
-      .insert({
+      .update({
         client_id: clientId,
         appointment_date: day,
         appointment_time: hour,
@@ -340,12 +340,14 @@ export default function EditAppointment() {
     router.replace("/get-appointments");
   };
 
+  if (loading) return null;
+
   /* =======================
      RENDER
      ======================= */
   return (
     <ScrollView style={styles.container}>
-      <ThemedText type="title">Crea un nuovo appuntamento</ThemedText>
+      <ThemedText type="title">Modifica appuntamento</ThemedText>
 
       {/* DROPDOWN CLIENTE */}
       <Pressable

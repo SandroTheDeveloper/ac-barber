@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { View, TextInput, Pressable, StyleSheet, Alert } from "react-native";
-import { supabase } from "@/app/utils/supabase";
 import { ThemedText } from "@/components/themed-text";
 import { Stack } from "expo-router";
+import { supabase } from "../services/supabase";
 
 export default function ResetPassword() {
   const [email, setEmail] = useState("");
