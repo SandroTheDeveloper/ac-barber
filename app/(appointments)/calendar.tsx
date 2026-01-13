@@ -1,8 +1,9 @@
 import { useMemo, useState } from "react";
-import { View, StyleSheet } from "react-native";
+import { View } from "react-native";
 import { Calendar as RNCalendar } from "react-native-calendars";
 import { ThemedText } from "@/components/themed-text";
 import { useRouter } from "expo-router";
+import { styles } from "./styles";
 
 type CalendarProps = {
   onSelectDate: (date: string) => void;
@@ -82,7 +83,7 @@ export function Calendar({ onSelectDate }: CalendarProps) {
      RENDER
      ======================= */
   return (
-    <View style={styles.container}>
+    <View style={styles.calendarContainer}>
       <RNCalendar
         firstDay={1}
         minDate={minDate}
@@ -118,16 +119,3 @@ export function Calendar({ onSelectDate }: CalendarProps) {
     </View>
   );
 }
-
-/* =======================
-   STYLES
-   ======================= */
-const styles = StyleSheet.create({
-  container: {
-    marginVertical: 16,
-  },
-  selectedInfo: {
-    marginTop: 12,
-    fontSize: 14,
-  },
-});
