@@ -1,4 +1,3 @@
-// features/clients/api.ts
 import { supabase } from "@/app/services/supabase";
 import { Client } from "./types";
 

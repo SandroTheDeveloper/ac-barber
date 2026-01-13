@@ -1,4 +1,3 @@
-// features/clients/hooks/useClient.ts
 import { useEffect, useState } from "react";
 import { Client } from "../types";
 import { getClientById, updateClient } from "../api";

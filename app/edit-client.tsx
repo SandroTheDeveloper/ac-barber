@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { View, TextInput, Pressable, StyleSheet, Alert } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ThemedText } from "@/components/themed-text";
-import { supabase } from "./services/supabase";
 import { useClient } from "./features/clients/hooks/useClient";
 
 export default function EditClient() {

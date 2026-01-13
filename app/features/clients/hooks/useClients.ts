@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Client } from "../types";
-import { deleteClient, getClients } from "../api";
+import { addClient, deleteClient, getClients } from "../api";
 
 export function useClients() {
   const [clients, setClients] = useState<Client[]>([]);
@@ -14,9 +14,14 @@ export function useClients() {
   };
 
     const remove = async (id: string) => {
-    await deleteClient(id);
-    load();
-  };
+      await deleteClient(id);
+      load();
+    };
+
+    const add = async (newClient: Client) => {
+      const success =  await addClient(newClient);
+      return success;
+    };
 
   useEffect(() => {
     load();
@@ -27,5 +32,6 @@ export function useClients() {
     loading,
     reload: load,
     remove,
+    add
   };
 }

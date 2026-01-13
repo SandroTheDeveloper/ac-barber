@@ -11,6 +11,7 @@ import { Stack, useRouter } from "expo-router";
 import { ThemedText } from "@/components/themed-text";
 import { useUserRole } from "@/hooks/use-role-user";
 import { supabase } from "../services/supabase";
+import { useClients } from "../features/clients/hooks/useClients";
 
 export default function CreateAccount() {
   const [firstName, setFirstName] = useState("");
@@ -22,6 +23,7 @@ export default function CreateAccount() {
   const { role, loading } = useUserRole();
   const DEFAULT_PASSWORD = "esplosionecapelli26";
   const finalPassword = role === "ADMIN" ? DEFAULT_PASSWORD : password;
+  const { add } = useClients();
 
   const validateFields = () => {
     const requiredFields: { value: string; message: string }[] = [
@@ -54,18 +56,12 @@ export default function CreateAccount() {
 
     try {
       // 1️⃣ CREA L’UTENTE AUTH
-      const { data, error } = await supabase.auth.signUp({
+      const { data } = await supabase.auth.signUp({
         email,
         password: finalPassword,
       });
 
-      if (error) {
-        Alert.alert("Errore", error.message);
-        return;
-      }
-
-      // 2️⃣ CREA IL PROFILO CLIENT
-      await supabase.from("clients").insert({
+      const success = await add({
         id: data.user!.id,
         first_name: firstName,
         last_name: lastName,
@@ -73,6 +69,11 @@ export default function CreateAccount() {
         email,
         role: "CLIENT",
       });
+
+      if (!success) {
+        Alert.alert("Errore", "Impossibile salvare");
+        return;
+      }
 
       const title =
         role === "ADMIN"
