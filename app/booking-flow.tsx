@@ -7,7 +7,7 @@ import { ThemedView } from "@/components/themed-view";
 import { SelectHour, Service, Period } from "./selectHour";
 import { useRouter } from "expo-router";
 import { supabase } from "./services/supabase";
-import { getBookedHours } from "./services/appointments";
+import { getBookedHours } from "./features/appointments/api";
 
 type BookingFlowProps = {
   onBackFromPeriod: () => void;

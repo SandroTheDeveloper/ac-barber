@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { getMyAppointments } from "./api";
-import { Appointment } from "./types";
+import { getMyAppointments } from "../api";
+import { Appointment } from "../types";
 
 export const useMyAppointments = (
   clientId: string | null,

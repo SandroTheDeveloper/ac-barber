@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   View,
   StyleSheet,
@@ -13,36 +13,26 @@ import { ThemedText } from "@/components/themed-text";
 import { router, Stack } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { Calendar } from "react-native-calendars";
-import { deleteAppointments } from "./services/appointments";
 import { formatAppointmentDate } from "./services/helper";
-import { supabase } from "./services/supabase";
-
-export type Appointment = {
-  id: string;
-  appointment_date: string;
-  appointment_time: string;
-  service: string;
-  status: string;
-  client: {
-    first_name: string;
-    last_name: string;
-    phone?: string;
-  } | null;
-};
-
-type DateFilter = "TODAY" | "DATE" | "PAST" | "ALL";
+import { Appointment } from "./features/appointments/types";
+import {
+  DateFilter,
+  useAppointments,
+} from "./features/appointments/hooks/useAppointments";
 
 export default function AppointmentsScreen() {
-  const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
-
-  const PAGE_SIZE = 10;
 
   const [dateFilter, setDateFilter] = useState<DateFilter>("TODAY");
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [calendarOpen, setCalendarOpen] = useState(false);
+  const { appointments, loading, remove } = useAppointments(
+    dateFilter,
+    selectedDate
+  );
 
+  const PAGE_SIZE = 10;
   // 🔹 Modifica cliente
   const handleEdit = (appointment: Appointment) => {
     router.push({
@@ -76,10 +66,7 @@ export default function AppointmentsScreen() {
   };
 
   const deleteAndRefresh = async (id: string) => {
-    const success = await deleteAppointments(id);
-    if (success) {
-      setAppointments((prev) => prev.filter((a) => a.id !== id));
-    }
+    await remove(id);
   };
 
   // 🔍 Filtra clienti
@@ -164,63 +151,6 @@ export default function AppointmentsScreen() {
       </View>
     );
   };
-
-  useEffect(() => {
-    const loadAppointments = async () => {
-      const today = new Date().toISOString().split("T")[0];
-      let query = supabase
-        .from("appointments")
-        .select(
-          `
-          id,
-          appointment_date,
-          appointment_time,
-          service,
-          status,
-          clients (
-            first_name,
-            last_name,
-            phone
-          )
-          `
-        )
-        .order("appointment_date", { ascending: true });
-
-      switch (dateFilter) {
-        case "TODAY":
-          query = query.eq("appointment_date", today);
-          break;
-        case "DATE":
-          if (selectedDate) {
-            query = query.eq("appointment_date", selectedDate);
-          }
-          break;
-        case "PAST":
-          query = query.lt("appointment_date", today);
-          break;
-        case "ALL":
-        default:
-          break;
-      }
-
-      const { data, error } = await query;
-
-      if (!error && data) {
-        const normalized: Appointment[] = data.map((a: any) => ({
-          id: a.id,
-          appointment_date: a.appointment_date,
-          appointment_time: a.appointment_time,
-          service: a.service,
-          status: a.status,
-          client: a.clients,
-        }));
-
-        setAppointments(normalized);
-      }
-    };
-
-    loadAppointments();
-  }, [dateFilter, selectedDate]);
 
   return (
     <>
