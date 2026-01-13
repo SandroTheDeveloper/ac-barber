@@ -3,6 +3,7 @@ import { View, TextInput, Pressable, StyleSheet, Alert } from "react-native";
 import { useRouter } from "expo-router";
 import { ThemedText } from "@/components/themed-text";
 import { supabase } from "../services/supabase";
+import { styles } from "./styles";
 
 const DEFAULT_PASSWORD = "esplosionecapelli26";
 
@@ -70,21 +71,3 @@ export default function LoginScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "center", padding: 20 },
-  input: {
-    borderWidth: 1,
-    borderColor: "#888",
-    padding: 10,
-    marginBottom: 10,
-    borderRadius: 8,
-  },
-  button: {
-    backgroundColor: "blue",
-    padding: 12,
-    borderRadius: 8,
-    alignItems: "center",
-    marginTop: 10,
-  },
-});

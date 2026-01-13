@@ -11,8 +11,9 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { ThemedText } from "@/components/themed-text";
 import { Stack, useFocusEffect, useRouter } from "expo-router";
-import { Client } from "./features/clients/types";
-import { useClients } from "./features/clients/hooks/useClients";
+import { useClients } from "../features/clients/hooks/useClients";
+import { Client } from "../features/clients/types";
+import { styles } from "./styles";
 
 export default function ClientsScreen() {
   const PAGE_SIZE = 10;
@@ -175,77 +176,3 @@ export default function ClientsScreen() {
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16 },
-
-  search: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 10,
-    padding: 10,
-    marginVertical: 12,
-  },
-
-  card: {
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    padding: 14,
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: "#e0e0e0",
-  },
-
-  name: {
-    fontSize: 16,
-    marginBottom: 4,
-  },
-
-  meta: {
-    fontSize: 14,
-    opacity: 0.8,
-  },
-
-  actions: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    marginTop: 12,
-    gap: 10,
-  },
-
-  actionBtn: {
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 8,
-    borderWidth: 1,
-  },
-
-  editBtn: {
-    borderColor: "#888",
-  },
-
-  deleteBtn: {
-    borderColor: "red",
-  },
-
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-  },
-
-  pagination: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginTop: 12,
-  },
-
-  pageBtn: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderWidth: 1,
-    borderRadius: 6,
-    borderColor: "#555",
-  },
-});

@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { View, TextInput, Pressable, StyleSheet, Alert } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ThemedText } from "@/components/themed-text";
-import { useClient } from "./features/clients/hooks/useClient";
+import { useClient } from "../features/clients/hooks/useClient";
+import { styles } from "./styles";
 
 export default function EditClient() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -79,21 +80,3 @@ export default function EditClient() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20 },
-  input: {
-    borderWidth: 1,
-    borderColor: "#888",
-    padding: 10,
-    marginBottom: 10,
-    borderRadius: 8,
-  },
-  button: {
-    backgroundColor: "green",
-    padding: 12,
-    borderRadius: 8,
-    alignItems: "center",
-    marginTop: 10,
-  },
-});

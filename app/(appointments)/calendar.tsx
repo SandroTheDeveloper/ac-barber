@@ -100,7 +100,7 @@ export function Calendar({ onSelectDate }: CalendarProps) {
           setSelectedDate(day.dateString);
           onSelectDate(day.dateString);
           router.push(
-            `/booking-flow?date=${encodeURIComponent(day.dateString)}`
+            `/appointment-flow?date=${encodeURIComponent(day.dateString)}`
           );
         }}
         theme={{

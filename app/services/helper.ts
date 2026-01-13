@@ -1,5 +1,5 @@
 import { LocaleConfig } from "react-native-calendars";
-import { Service } from "../selectHour";
+import { Service } from "../(appointments)/selectHour";
 
 export function formatAppointmentDate(
   date: string,

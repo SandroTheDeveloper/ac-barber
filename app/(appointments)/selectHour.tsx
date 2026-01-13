@@ -1,6 +1,7 @@
 import { Pressable, StyleSheet, View } from "react-native";
 import { ThemedText } from "@/components/themed-text";
 import { ForwardedRef, forwardRef, JSX, useImperativeHandle } from "react";
+import { styles } from "./styles";
 
 export type Service = "TAGLIO" | "BARBA" | "TAGLIO+BARBA";
 export type Period = "MATTINO" | "POMERIGGIO";
@@ -117,7 +118,7 @@ export const SelectHour = forwardRef(
     const blockedSlots = service ? getBlockedSlots(bookedHours, service) : [];
 
     return (
-      <View style={styles.container}>
+      <View style={styles.containerHour}>
         {/* STEP 1 — SERVIZIO */}
         {!service && (
           <View>
@@ -125,7 +126,7 @@ export const SelectHour = forwardRef(
               <Pressable
                 key={s}
                 onPress={() => onSelectService(s)}
-                style={styles.button}
+                style={styles.buttonHour}
               >
                 <ThemedText>{s}</ThemedText>
               </Pressable>
@@ -145,7 +146,7 @@ export const SelectHour = forwardRef(
                 <Pressable
                   key={p}
                   onPress={() => onSelectPeriod(p)}
-                  style={styles.button}
+                  style={styles.buttonHour}
                 >
                   <ThemedText>{p}</ThemedText>
                 </Pressable>
@@ -164,7 +165,7 @@ export const SelectHour = forwardRef(
             )}
 
             {rows.map((row) => (
-              <View key={row.join("-")} style={styles.row}>
+              <View key={row.join("-")} style={styles.rowHour}>
                 {row.map((hour) => {
                   const isSelected = selectedHour === hour;
                   const isBooked = blockedSlots.includes(hour);
@@ -198,45 +199,3 @@ export const SelectHour = forwardRef(
     );
   }
 );
-
-const styles = StyleSheet.create({
-  container: {
-    marginTop: 20,
-    alignSelf: "center",
-  },
-  row: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 8,
-    gap: 12,
-  },
-  button: {
-    padding: 12,
-    borderWidth: 1,
-    borderRadius: 8,
-    marginBottom: 8,
-    width: 200,
-    height: 50,
-    alignItems: "center",
-  },
-  back: { marginBottom: 12 },
-  hour: {
-    width: 70,
-    height: 70,
-    borderWidth: 1,
-    borderRadius: 8,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  selected: { backgroundColor: "green", borderColor: "green" },
-  selectedText: { color: "#fff" },
-  booked: {
-    backgroundColor: "#eee",
-    borderColor: "#ccc",
-    opacity: 0.5,
-  },
-  bookedText: {
-    textDecorationLine: "line-through",
-    color: "#999",
-  },
-});

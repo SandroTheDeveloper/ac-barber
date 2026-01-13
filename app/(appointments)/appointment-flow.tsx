@@ -6,14 +6,17 @@ import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { SelectHour, Service, Period } from "./selectHour";
 import { useRouter } from "expo-router";
-import { supabase } from "./services/supabase";
-import { getBookedHours } from "./features/appointments/api";
+import { supabase } from "../services/supabase";
+import { getBookedHours } from "../features/appointments/api";
+import { styles } from "./styles";
 
-type BookingFlowProps = {
+type AppointmentFlowProps = {
   onBackFromPeriod: () => void;
 };
 
-export default function BookingFlow({ onBackFromPeriod }: BookingFlowProps) {
+export default function AppointmentFlow({
+  onBackFromPeriod,
+}: AppointmentFlowProps) {
   const { date } = useLocalSearchParams<{ date: string }>();
   const selectedDate = date ? new Date(decodeURIComponent(date)) : null;
 
@@ -95,7 +98,7 @@ export default function BookingFlow({ onBackFromPeriod }: BookingFlowProps) {
 
         <Pressable
           style={styles.button}
-          onPress={() => router.replace("/(tabs)/profilo")}
+          onPress={() => router.replace("/(tabs)/mio-profilo")}
         >
           <ThemedText>Le mie prenotazioni</ThemedText>
         </Pressable>
@@ -157,24 +160,3 @@ export default function BookingFlow({ onBackFromPeriod }: BookingFlowProps) {
     </ThemedView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-  },
-  button: {
-    padding: 12,
-    borderWidth: 1,
-    borderRadius: 8,
-    marginVertical: 12,
-    width: 220,
-    height: 50,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  summary: {
-    marginTop: 8,
-    fontSize: 16,
-  },
-});

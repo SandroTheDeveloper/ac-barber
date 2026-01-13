@@ -1,19 +1,13 @@
 import { useState } from "react";
-import {
-  View,
-  TextInput,
-  Pressable,
-  StyleSheet,
-  Alert,
-  Platform,
-} from "react-native";
+import { View, TextInput, Pressable, Alert, Platform } from "react-native";
 import { Stack, useRouter } from "expo-router";
 import { ThemedText } from "@/components/themed-text";
 import { useUserRole } from "@/hooks/use-role-user";
 import { supabase } from "../services/supabase";
 import { useClients } from "../features/clients/hooks/useClients";
+import { styles } from "./styles";
 
-export default function CreateAccount() {
+export default function CreateClient() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("");
@@ -151,20 +145,3 @@ export default function CreateAccount() {
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "center", padding: 20 },
-  input: {
-    borderWidth: 1,
-    borderColor: "#888",
-    padding: 10,
-    marginBottom: 10,
-    borderRadius: 8,
-  },
-  button: {
-    backgroundColor: "green",
-    padding: 12,
-    borderRadius: 8,
-    alignItems: "center",
-  },
-});

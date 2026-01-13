@@ -1,12 +1,12 @@
-import { Image } from "expo-image";
-import { Pressable, StyleSheet } from "react-native";
+import { Pressable } from "react-native";
 
 import ParallaxScrollView from "@/components/parallax-scroll-view";
 import { ThemedText } from "@/components/themed-text";
 import { useRouter } from "expo-router";
 import { IconSymbol } from "@/components/ui/icon-symbol";
+import { styles } from "./styles";
 
-export default function MyProfile() {
+export default function MioProfilo() {
   const router = useRouter();
 
   return (
@@ -26,7 +26,7 @@ export default function MyProfile() {
     >
       <Pressable
         style={[styles.button]}
-        onPress={() => router.push("/prenotazioni")}
+        onPress={() => router.push("/(appointments)/my-appointment")}
       >
         <ThemedText>Le mie prenotazioni</ThemedText>
       </Pressable>
@@ -40,38 +40,3 @@ export default function MyProfile() {
     </ParallaxScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    padding: 20,
-  },
-  button: {
-    backgroundColor: "blue",
-    padding: 12,
-    borderRadius: 8,
-    alignItems: "center",
-    marginTop: 10,
-  },
-  buttonText: {
-    color: "#fff",
-    fontWeight: "600",
-  },
-  titleContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: "absolute",
-  },
-});

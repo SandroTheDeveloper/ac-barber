@@ -21,7 +21,7 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen
-        name="index"
+        name="home"
         options={{
           title: "Home",
           tabBarIcon: ({ color }) => (
@@ -31,7 +31,7 @@ export default function TabLayout() {
       />
 
       <Tabs.Screen
-        name="explore"
+        name="disponibilità"
         options={{
           title: "Disponibilità",
           tabBarIcon: ({ color }) => (
@@ -41,7 +41,7 @@ export default function TabLayout() {
       />
 
       <Tabs.Screen
-        name="profilo"
+        name="mio profilo"
         options={{
           title: "Mio Profilo",
           tabBarIcon: ({ color }) => (
@@ -52,7 +52,7 @@ export default function TabLayout() {
 
       {/* 🔐 SOLO ADMIN */}
       <Tabs.Screen
-        name="management"
+        name="gestione clienti"
         options={{
           title: "Gestione clienti",
           tabBarIcon: ({ color }) => (

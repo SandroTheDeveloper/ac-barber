@@ -3,6 +3,7 @@ import { View, TextInput, Pressable, StyleSheet, Alert } from "react-native";
 import { ThemedText } from "@/components/themed-text";
 import { Stack } from "expo-router";
 import { supabase } from "../services/supabase";
+import { styles } from "./styles";
 
 export default function ResetPassword() {
   const [email, setEmail] = useState("");
@@ -63,21 +64,3 @@ export default function ResetPassword() {
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "center", padding: 20 },
-  input: {
-    borderWidth: 1,
-    borderColor: "#888",
-    padding: 10,
-    marginBottom: 10,
-    borderRadius: 8,
-  },
-  button: {
-    backgroundColor: "blue",
-    padding: 12,
-    borderRadius: 8,
-    alignItems: "center",
-    marginTop: 10,
-  },
-});

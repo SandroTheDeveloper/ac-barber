@@ -44,7 +44,7 @@ export default function RootLayout() {
         <Stack.Protected guard={!!isLoggedIn}>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen
-            name="booking-flow"
+            name="appointment-flow"
             options={{ title: "Torna al calendario" }}
           />
         </Stack.Protected>

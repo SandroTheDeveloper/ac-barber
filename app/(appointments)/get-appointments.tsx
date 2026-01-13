@@ -1,43 +1,45 @@
+import React, { useMemo, useState } from "react";
 import {
   View,
   StyleSheet,
   TextInput,
-  Pressable,
-  Modal,
   FlatList,
+  Pressable,
   Platform,
   Alert,
+  Modal,
 } from "react-native";
-import { router, Stack, useRouter } from "expo-router";
 import { ThemedText } from "@/components/themed-text";
-import { Calendar } from "react-native-calendars";
-import { useEffect, useMemo, useState } from "react";
+import { router, Stack } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { supabase } from "./services/supabase";
-import { formatAppointmentDate } from "./services/helper";
-import { Appointment } from "./features/appointments/types";
+import { Calendar } from "react-native-calendars";
+import { formatAppointmentDate } from "../services/helper";
+import { Appointment } from "../features/appointments/types";
+import {
+  DateFilter,
+  useAppointments,
+} from "../features/appointments/hooks/useAppointments";
 
-type DateFilter = "TODAY" | "DATE" | "PAST" | "ALL";
-
-export default function Prenotazioni() {
-  const [appointments, setAppointments] = useState<Appointment[]>([]);
+export default function AppointmentsScreen() {
   const [search, setSearch] = useState("");
-  const [loading, setLoading] = useState(false);
-
   const [currentPage, setCurrentPage] = useState(0);
-  const PAGE_SIZE = 10;
 
-  const [dateFilter, setDateFilter] = useState<DateFilter>("ALL");
+  const [dateFilter, setDateFilter] = useState<DateFilter>("TODAY");
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [calendarOpen, setCalendarOpen] = useState(false);
+  const { appointments, loading, remove } = useAppointments(
+    dateFilter,
+    selectedDate
+  );
 
-  const [clientId, setClientId] = useState<string | null>(null);
-
-  useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      setClientId(data.user?.id ?? null);
+  const PAGE_SIZE = 10;
+  // 🔹 Modifica cliente
+  const handleEdit = (appointment: Appointment) => {
+    router.push({
+      pathname: "/edit-appointment",
+      params: { id: appointment.id },
     });
-  }, []);
+  };
 
   // 🔹 Elimina cliente con conferma
   const handleDelete = (id: string, appointment: Appointment) => {
@@ -45,7 +47,7 @@ export default function Prenotazioni() {
       appointment.appointment_date,
       appointment.appointment_time
     );
-    const message = `Sei sicuro di voler eliminare l'appuntamento del ${day} delle ore ${hour}?`;
+    const message = `Sei sicuro di voler eliminare l'appuntamento di ${appointment.client?.first_name} ${appointment.client?.last_name} del ${day} delle ore ${hour}?`;
 
     if (Platform.OS === "web") {
       const confirmed = window.confirm(message);
@@ -64,10 +66,7 @@ export default function Prenotazioni() {
   };
 
   const deleteAndRefresh = async (id: string) => {
-    const success = true;
-    if (success) {
-      setAppointments((prev) => prev.filter((a) => a.id !== id));
-    }
+    await remove(id);
   };
 
   // 🔍 Filtra clienti
@@ -131,6 +130,18 @@ export default function Prenotazioni() {
               styles.editBtn,
               isPastAppointment && styles.disabledBtn,
             ]}
+            onPress={() => handleEdit(item)}
+            disabled={isPastAppointment}
+          >
+            <ThemedText>Modifica</ThemedText>
+          </Pressable>
+
+          <Pressable
+            style={[
+              styles.actionBtn,
+              styles.editBtn,
+              isPastAppointment && styles.disabledBtn,
+            ]}
             onPress={() => handleDelete(item.id!, item)}
             disabled={isPastAppointment}
           >
@@ -140,67 +151,6 @@ export default function Prenotazioni() {
       </View>
     );
   };
-
-  const loadAppointments = async () => {
-    setLoading(true);
-    const today = new Date().toISOString().split("T")[0];
-    let query = supabase
-      .from("appointments")
-      .select(
-        `
-              id,
-              appointment_date,
-              appointment_time,
-              service,
-              status,
-              clients (
-                first_name,
-                last_name,
-                phone
-              )
-              `
-      )
-      .eq("client_id", clientId)
-      .order("appointment_date", { ascending: true });
-
-    setLoading(false);
-
-    switch (dateFilter) {
-      case "TODAY":
-        query = query.eq("appointment_date", today);
-        break;
-      case "DATE":
-        if (selectedDate) {
-          query = query.eq("appointment_date", selectedDate);
-        }
-        break;
-      case "PAST":
-        query = query.lt("appointment_date", today);
-        break;
-      case "ALL":
-      default:
-        break;
-    }
-
-    const { data, error } = await query;
-
-    if (error) return;
-
-    setAppointments(
-      data.map((a: any) => ({
-        ...a,
-        client: a.clients ?? null,
-      }))
-    );
-  };
-
-  useEffect(() => {
-    loadAppointments();
-  }, [clientId, dateFilter, selectedDate]);
-
-  useEffect(() => {
-    setCurrentPage(0);
-  }, [search, dateFilter, selectedDate]);
 
   return (
     <>
@@ -283,7 +233,6 @@ export default function Prenotazioni() {
               Non ci sono prenotazioni
             </ThemedText>
           }
-          {...(loading && <ThemedText>Caricamento…</ThemedText>)}
         />
 
         {/* 🔹 Controlli paginazione */}
