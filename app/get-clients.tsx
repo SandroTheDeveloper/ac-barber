@@ -12,27 +12,15 @@ import { Ionicons } from "@expo/vector-icons";
 import { ThemedText } from "@/components/themed-text";
 import { Stack, useFocusEffect, useRouter } from "expo-router";
 import { Client } from "./features/clients/types";
-import { deleteClient, getClients } from "./services/client";
+import { useClients } from "./features/clients/hooks/useClients";
 
 export default function ClientsScreen() {
   const PAGE_SIZE = 10;
 
-  const [clients, setClients] = useState<Client[]>([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [search, setSearch] = useState("");
   const router = useRouter();
-
-  // 🔹 Carica clienti dal DB
-  const loadClients = async () => {
-    const data = await getClients();
-    setClients(data);
-  };
-
-  useFocusEffect(
-    useCallback(() => {
-      loadClients();
-    }, [])
-  );
+  const { clients, loading, remove } = useClients();
 
   // 🔹 Modifica cliente
   const handleEdit = (client: Client) => {
@@ -60,8 +48,7 @@ export default function ClientsScreen() {
   };
 
   const deleteAndRefresh = async (id: string) => {
-    await deleteClient(id);
-    loadClients();
+    await remove(id);
   };
 
   // 🔍 Filtra clienti

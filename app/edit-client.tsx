@@ -3,6 +3,7 @@ import { View, TextInput, Pressable, StyleSheet, Alert } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ThemedText } from "@/components/themed-text";
 import { supabase } from "./services/supabase";
+import { useClient } from "./features/clients/hooks/useClient";
 
 export default function EditClient() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -12,51 +13,33 @@ export default function EditClient() {
   const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
-  const [loading, setLoading] = useState(true);
+
+  const { client, loading, save } = useClient(id);
 
   useEffect(() => {
-    if (!id) return;
+    if (!client) return;
 
-    const loadClient = async () => {
-      const { data, error } = await supabase
-        .from("clients")
-        .select("*")
-        .eq("id", id)
-        .single();
-
-      if (error) {
-        Alert.alert("Errore", error.message);
-        router.back();
-        return;
-      }
-
-      setFirstName(data.first_name);
-      setLastName(data.last_name);
-      setPhone(data.phone ?? "");
-      setEmail(data.email ?? "");
-      setLoading(false);
-    };
-
-    loadClient();
-  }, [id]);
+    setFirstName(client.first_name);
+    setLastName(client.last_name);
+    setPhone(client.phone ?? "");
+    setEmail(client.email ?? "");
+  }, [client]);
 
   const handleSave = async () => {
-    const { error } = await supabase
-      .from("clients")
-      .update({
-        first_name: firstName,
-        last_name: lastName,
-        phone,
-        email,
-      })
-      .eq("id", id);
+    const success = await save({
+      first_name: firstName,
+      last_name: lastName,
+      phone,
+      email,
+    });
 
-    if (error) {
-      Alert.alert("Errore", error.message);
-    } else {
-      Alert.alert("Salvato", "Cliente aggiornato");
-      router.back();
+    if (!success) {
+      Alert.alert("Errore", "Impossibile salvare");
+      return;
     }
+
+    Alert.alert("Salvato", "Cliente aggiornato con successo");
+    router.back();
   };
 
   if (loading) return null;
