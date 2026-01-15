@@ -1,15 +1,15 @@
 import { useMemo, useState } from "react";
 import { View } from "react-native";
-import { Calendar as RNCalendar } from "react-native-calendars";
 import { ThemedText } from "@/components/themed-text";
 import { useRouter } from "expo-router";
 import { styles } from "./styles";
+import { Calendar } from "react-native-calendars";
 
 type CalendarProps = {
   onSelectDate: (date: string) => void;
 };
 
-export function Calendar({ onSelectDate }: CalendarProps) {
+export function CalendarScreen({ onSelectDate }: CalendarProps) {
   const router = useRouter();
 
   /* =======================
@@ -84,7 +84,7 @@ export function Calendar({ onSelectDate }: CalendarProps) {
      ======================= */
   return (
     <View style={styles.calendarContainer}>
-      <RNCalendar
+      <Calendar
         firstDay={1}
         minDate={minDate}
         maxDate={maxDate}

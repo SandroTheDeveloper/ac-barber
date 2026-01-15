@@ -1,5 +1,5 @@
 import { useLocalSearchParams } from "expo-router";
-import { Pressable, StyleSheet, View, Alert } from "react-native";
+import { Pressable, View, Alert } from "react-native";
 import { useEffect, useRef, useState } from "react";
 
 import { ThemedText } from "@/components/themed-text";
@@ -38,9 +38,6 @@ export default function AppointmentFlow({
     getBookedHours(toDateOnly(selectedDate)).then(setBookedHours);
   }, [selectedDate]);
 
-  /* =======================
-     FUNZIONE SALVATAGGIO
-     ======================= */
   const handleConfirm = async () => {
     if (!selectedDate || !service || !period || !hour) {
       Alert.alert("Errore", "Seleziona giorno, servizio, periodo e ora");
@@ -60,7 +57,7 @@ export default function AppointmentFlow({
 
       const { data, error } = await supabase.from("appointments").insert([
         {
-          client_id: user.id, // <-- qui aggiungi l'ID del cliente
+          client_id: user.id,
           appointment_date: toDateOnly(selectedDate),
           appointment_time: hour,
           service,
@@ -78,9 +75,7 @@ export default function AppointmentFlow({
     }
   };
 
-  /* =======================
-     STEP FINALE DI CONFERMA
-     ======================= */
+  //STEP FINALE DI CONFERMA
   if (confirmed) {
     return (
       <ThemedView style={styles.container}>
@@ -106,9 +101,7 @@ export default function AppointmentFlow({
     );
   }
 
-  /* =======================
-     FLOW NORMALE
-     ======================= */
+  //FLOW NORMALE
   return (
     <ThemedView style={styles.container}>
       <ThemedText type="title">Hai selezionato:</ThemedText>

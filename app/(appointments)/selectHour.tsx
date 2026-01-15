@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, View } from "react-native";
+import { Pressable, View } from "react-native";
 import { ThemedText } from "@/components/themed-text";
 import { ForwardedRef, forwardRef, JSX, useImperativeHandle } from "react";
 import { styles } from "./styles";
