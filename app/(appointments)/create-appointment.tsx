@@ -10,11 +10,11 @@ import {
   Platform,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { Calendar } from "react-native-calendars";
 import { ThemedText } from "@/components/themed-text";
 import { supabase } from "../services/supabase";
 import { getBlockedSlots, getServices } from "../services/helper";
 import { styles } from "./styles";
+import { CalendarPicker } from "@/components/ui/calendar/CalendarPicker";
 
 type Client = {
   id: string;
@@ -53,44 +53,17 @@ export default function EditAppointment() {
   const [calendarOpen, setCalendarOpen] = useState(false);
 
   // Hour state
-  const [hour, setHour] = useState("");
+  const [hour, setHour] = useState<string | null>(null);
   const [period, setPeriod] = useState<Period | null>(null);
   const [dropdownPeriodOpen, setDropdownPeriodOpen] = useState(false);
   const [dropdownHourOpen, setDropdownHourOpen] = useState(false);
   const [bookedHours, setBookedHours] = useState<string[]>([]);
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
   const [loading, setLoading] = useState(true);
   const [originalAppointmentTime, setOriginalAppointmentTime] = useState("");
 
   const blockedSlots = service ? getBlockedSlots(bookedHours, service) : [];
-  const today = new Date();
-  const currentMonth = today.getMonth();
-  const currentYear = today.getFullYear();
-
-  const maxMonthDate = new Date(currentYear, currentMonth + 12, 1);
-
-  const [visibleMonth, setVisibleMonth] = useState({
-    month: currentMonth,
-    year: currentYear,
-  });
-
-  const disableArrowLeft =
-    visibleMonth.year < currentYear ||
-    (visibleMonth.year === currentYear && visibleMonth.month <= currentMonth);
-
-  const disableArrowRight =
-    visibleMonth.year > maxMonthDate.getFullYear() ||
-    (visibleMonth.year === maxMonthDate.getFullYear() &&
-      visibleMonth.month >= maxMonthDate.getMonth());
-
-  const minDate = new Date(currentYear, currentMonth, 1)
-    .toISOString()
-    .split("T")[0];
-
-  const maxDate = new Date(currentYear, currentMonth + 12, 31)
-    .toISOString()
-    .split("T")[0];
-
   /* =======================
      LOAD APPOINTMENT
      ======================= */
@@ -451,36 +424,15 @@ export default function EditAppointment() {
           onPress={() => setCalendarOpen(false)}
         >
           <View style={styles.calendarContainer}>
-            <Calendar
-              current={`${visibleMonth.year}-${String(
-                visibleMonth.month + 1
-              ).padStart(2, "0")}-01`}
-              onMonthChange={(month) => {
-                setVisibleMonth({
-                  month: month.month - 1, // calendar usa 1–12
-                  year: month.year,
-                });
-              }}
-              onDayPress={(selectedDay) => {
-                setDay(selectedDay.dateString);
-                setHour("");
+            <CalendarPicker
+              value={selectedDate}
+              onSelectDate={(date) => {
+                setSelectedDate(date);
+                setDay(date);
                 setCalendarOpen(false);
               }}
-              markedDates={{
-                ...getDisabledDates(),
-                [day]: { selected: true, selectedColor: "green" },
-              }}
-              theme={{
-                todayTextColor: "green",
-                arrowColor: "green",
-              }}
-              minDate={minDate}
-              maxDate={maxDate}
-              disableArrowLeft={disableArrowLeft}
-              disableArrowRight={disableArrowRight}
-              enableSwipeMonths={false}
-              hideExtraDays
-              firstDay={1}
+              disabledWeekDays={[0, 1]}
+              showSelectedLabel
             />
           </View>
         </Pressable>
@@ -567,7 +519,10 @@ export default function EditAppointment() {
       )}
 
       <Pressable style={styles.button} onPress={handleSave}>
-        <ThemedText style={{ color: "#fff" }}>Salva modifiche</ThemedText>
+        <ThemedText>Conferma</ThemedText>
+      </Pressable>
+      <Pressable style={styles.buttonCancel} onPress={router.back}>
+        <ThemedText>Annulla</ThemedText>
       </Pressable>
     </ScrollView>
   );

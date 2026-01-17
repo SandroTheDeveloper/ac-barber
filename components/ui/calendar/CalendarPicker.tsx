@@ -5,6 +5,7 @@ import { useRouter } from "expo-router";
 import { Calendar } from "react-native-calendars";
 import { styles } from "./calendar.styles";
 import { CalendarPickerProps } from "./types";
+import { useUserRole } from "@/hooks/use-role-user";
 
 export function CalendarPicker({
   value,
@@ -15,6 +16,7 @@ export function CalendarPicker({
   showSelectedLabel = false,
 }: CalendarPickerProps) {
   const router = useRouter();
+  const { role, loading } = useUserRole();
 
   const today = useMemo(() => {
     const d = new Date();
@@ -97,9 +99,11 @@ export function CalendarPicker({
         onDayPress={(day) => {
           setSelectedDate(day.dateString);
           onSelectDate(day.dateString);
-          router.push(
-            `/appointment-flow?date=${encodeURIComponent(day.dateString)}`
-          );
+          role !== "ADMIN"
+            ? router.push(
+                `/appointment-flow?date=${encodeURIComponent(day.dateString)}`
+              )
+            : "";
         }}
         theme={{
           todayTextColor: "green",

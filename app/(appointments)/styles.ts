@@ -87,6 +87,16 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 16,
     marginBottom: 40,
+    color: "#ffffffff",
+  },
+  buttonCancel: {
+    backgroundColor: "white",
+    padding: 12,
+    borderRadius: 8,
+    alignItems: "center",
+    marginTop: 16,
+    marginBottom: 40,
+    color: "black",
   },
 
   search: {
