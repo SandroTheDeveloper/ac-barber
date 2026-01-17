@@ -4,11 +4,12 @@ import { useEffect, useRef, useState } from "react";
 
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
-import { SelectHour, Service, Period } from "./selectHour";
+import { SelectHour } from "./selectHour";
 import { useRouter } from "expo-router";
 import { supabase } from "../services/supabase";
 import { getBookedHours } from "../features/appointments/api";
 import { styles } from "./styles";
+import { Period, Service } from "../features/appointments/types";
 
 type AppointmentFlowProps = {
   onBackFromPeriod: () => void;

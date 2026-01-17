@@ -1,7 +1,6 @@
 import React, { useMemo, useState } from "react";
 import {
   View,
-  StyleSheet,
   TextInput,
   FlatList,
   Pressable,

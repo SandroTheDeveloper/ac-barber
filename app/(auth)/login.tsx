@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View, TextInput, Pressable, StyleSheet, Alert } from "react-native";
+import { View, TextInput, Pressable, Alert } from "react-native";
 import { useRouter } from "expo-router";
 import { ThemedText } from "@/components/themed-text";
 import { supabase } from "../services/supabase";

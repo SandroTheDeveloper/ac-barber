@@ -1,16 +1,15 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   View,
   Pressable,
   FlatList,
-  StyleSheet,
   TextInput,
   Alert,
   Platform,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { ThemedText } from "@/components/themed-text";
-import { Stack, useFocusEffect, useRouter } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import { useClients } from "../features/clients/hooks/useClients";
 import { Client } from "../features/clients/types";
 import { styles } from "./styles";
