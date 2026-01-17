@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { View } from "react-native";
-import { Period, Service } from "./selectHour";
 import { CalendarPicker } from "@/components/ui/calendar/CalendarPicker";
 import { useRouter } from "expo-router";
+import { Period, Service } from "../features/appointments/types";
 
 export default function BookingScreen() {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);

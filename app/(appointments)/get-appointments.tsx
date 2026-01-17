@@ -12,7 +12,6 @@ import {
 import { ThemedText } from "@/components/themed-text";
 import { router, Stack } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { Calendar } from "react-native-calendars";
 import { formatAppointmentDate } from "../services/helper";
 import { Appointment } from "../features/appointments/types";
 import {
@@ -20,6 +19,7 @@ import {
   useAppointments,
 } from "../features/appointments/hooks/useAppointments";
 import { styles } from "./styles";
+import { CalendarPicker } from "@/components/ui/calendar/CalendarPicker";
 
 export default function AppointmentsScreen() {
   const [search, setSearch] = useState("");
@@ -211,15 +211,12 @@ export default function AppointmentsScreen() {
             onPress={() => setCalendarOpen(false)}
           >
             <View style={styles.calendarContainer}>
-              <Calendar
-                onDayPress={(day) => {
-                  setSelectedDate(day.dateString);
+              <CalendarPicker
+                onSelectDate={(date) => {
+                  setSelectedDate(date);
                   setCalendarOpen(false);
                 }}
-                markedDates={
-                  selectedDate ? { [selectedDate]: { selected: true } } : {}
-                }
-                firstDay={1}
+                disabledWeekDays={[0, 1]}
               />
             </View>
           </Pressable>

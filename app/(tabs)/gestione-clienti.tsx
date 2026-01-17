@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Pressable, StyleSheet } from "react-native";
+import { View, Pressable } from "react-native";
 import { ThemedText } from "@/components/themed-text";
 import { useRouter } from "expo-router";
 import { styles } from "./styles";

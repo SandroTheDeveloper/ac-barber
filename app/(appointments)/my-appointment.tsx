@@ -9,7 +9,6 @@ import {
 } from "react-native";
 import { Stack } from "expo-router";
 import { ThemedText } from "@/components/themed-text";
-import { Calendar } from "react-native-calendars";
 import { useEffect, useMemo, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { supabase } from "../services/supabase";
