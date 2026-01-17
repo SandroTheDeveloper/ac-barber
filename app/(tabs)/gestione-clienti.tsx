@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Pressable } from "react-native";
 import { ThemedText } from "@/components/themed-text";
-import { useRouter } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import { styles } from "./styles";
 
 export default function GestioneClienti() {
@@ -9,6 +9,12 @@ export default function GestioneClienti() {
 
   return (
     <View>
+      <Stack.Screen
+        options={{
+          title: "Gestione clienti",
+          headerBackTitle: "Indietro", // iOS
+        }}
+      />
       <Pressable
         style={styles.card}
         onPress={() => router.push("/(clients)/create-client")}

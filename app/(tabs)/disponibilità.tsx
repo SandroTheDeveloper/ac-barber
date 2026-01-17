@@ -10,7 +10,7 @@ export default function Disponibilità() {
     <View style={styles.container}>
       <Stack.Screen
         options={{
-          title: "Torna indietro",
+          title: "Disponibilità",
           headerBackTitle: "Indietro", // iOS
         }}
       />

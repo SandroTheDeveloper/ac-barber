@@ -2,7 +2,7 @@ import { Pressable } from "react-native";
 
 import ParallaxScrollView from "@/components/parallax-scroll-view";
 import { ThemedText } from "@/components/themed-text";
-import { useRouter } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { styles } from "./styles";
 
@@ -24,6 +24,12 @@ export default function MioProfilo() {
         />
       }
     >
+      <Stack.Screen
+        options={{
+          title: "Mio Profilo",
+          headerBackTitle: "Indietro", // iOS
+        }}
+      />
       <Pressable
         style={[styles.button]}
         onPress={() => router.push("/(appointments)/my-appointment")}
