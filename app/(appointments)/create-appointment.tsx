@@ -15,15 +15,13 @@ import { supabase } from "../services/supabase";
 import { getBlockedSlots, getServices } from "../services/helper";
 import { styles } from "./styles";
 import { CalendarPicker } from "@/components/ui/calendar/CalendarPicker";
+import { Period, Service } from "../features/appointments/types";
 
 type Client = {
   id: string;
   first_name: string;
   last_name: string;
 };
-
-type Service = "TAGLIO" | "BARBA" | "TAGLIO+BARBA";
-type Period = "MATTINO" | "POMERIGGIO";
 
 type AppointmentData = {
   appointment_date: string;
@@ -64,9 +62,7 @@ export default function EditAppointment() {
   const [originalAppointmentTime, setOriginalAppointmentTime] = useState("");
 
   const blockedSlots = service ? getBlockedSlots(bookedHours, service) : [];
-  /* =======================
-     LOAD APPOINTMENT
-     ======================= */
+  //LOAD APPOINTMENT
   useEffect(() => {
     if (!id) return;
 
@@ -121,9 +117,7 @@ export default function EditAppointment() {
     load();
   }, [id]);
 
-  /* =======================
-     LOAD CLIENTS
-     ======================= */
+  //LOAD CLIENTS
   useEffect(() => {
     const loadClients = async () => {
       const { data } = await supabase
@@ -137,9 +131,7 @@ export default function EditAppointment() {
     loadClients();
   }, []);
 
-  /* =======================
-     LOAD BOOKED HOURS
-     ======================= */
+  //LOAD BOOKED HOURS
   useEffect(() => {
     if (!day) return;
 
@@ -162,9 +154,7 @@ export default function EditAppointment() {
     loadBookedHours();
   }, [day, id]);
 
-  /* =======================
-     GENERATE HOUR SLOTS
-     ======================= */
+  //GENERATE HOUR SLOTS
   const generateSlots = (): string[] => {
     if (!period) return [];
 
@@ -201,9 +191,7 @@ export default function EditAppointment() {
   };
   const slots = generateSlots();
 
-  /* =======================
-     FORMAT DATE
-     ======================= */
+  //FORMAT DATE
   const formatDate = (dateString: string) => {
     if (!dateString) return "Seleziona data";
     const date = new Date(dateString + "T00:00:00");
@@ -215,42 +203,7 @@ export default function EditAppointment() {
     });
   };
 
-  /* =======================
-     DISABLED DATES
-     ======================= */
-  const getDisabledDates = () => {
-    const disabled: {
-      [key: string]: { disabled: boolean; disableTouchEvent: boolean };
-    } = {};
-    const today = new Date();
-    const startDate = new Date(today.getFullYear(), today.getMonth(), 1);
-    const endDate = new Date(today.getFullYear(), today.getMonth() + 13, 0);
-
-    for (
-      let d = new Date(startDate);
-      d <= endDate;
-      d.setDate(d.getDate() + 1)
-    ) {
-      const dayOfWeek = d.getDay();
-      const dateStr = d.toISOString().split("T")[0];
-
-      // Disabilita Domenica (1) e Lunedì (2)
-      if (dayOfWeek === 1 || dayOfWeek === 2) {
-        disabled[dateStr] = { disabled: true, disableTouchEvent: true };
-      }
-
-      // Disabilita date passate
-      if (d < today) {
-        disabled[dateStr] = { disabled: true, disableTouchEvent: true };
-      }
-    }
-
-    return disabled;
-  };
-
-  /* =======================
-     SAVE
-     ======================= */
+  //SAVE
   const handleSave = async () => {
     const message = `Sei sicuro di voler aggiungere l'appuntamento?`;
     const updateSuccess = `Appuntamento aggiunto con successo`;
@@ -313,9 +266,7 @@ export default function EditAppointment() {
     router.replace("/get-appointments");
   };
 
-  /* =======================
-     RENDER
-     ======================= */
+  //RENDER
   return (
     <ScrollView style={styles.createAppContainer}>
       <ThemedText type="title">Crea un nuovo appuntamento</ThemedText>

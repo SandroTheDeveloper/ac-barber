@@ -2,7 +2,7 @@ export type Appointment = {
   id: string;
   appointment_date: string;
   appointment_time: string;
-  service: string;
+  service: Service;
   status: string;
   client: {
     first_name: string;
@@ -10,3 +10,7 @@ export type Appointment = {
     phone?: string;
   } | null;
 };
+
+export type Service = "TAGLIO" | "BARBA" | "TAGLIO+BARBA";
+
+export type Period = "MATTINO" | "POMERIGGIO";

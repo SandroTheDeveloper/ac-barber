@@ -17,6 +17,7 @@ import { formatAppointmentDate } from "../services/helper";
 import { Appointment } from "../features/appointments/types";
 import { DateFilter } from "../features/appointments/hooks/useAppointments";
 import { styles } from "./styles";
+import { CalendarPicker } from "@/components/ui/calendar/CalendarPicker";
 
 export default function MyAppointment() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
@@ -259,15 +260,14 @@ export default function MyAppointment() {
             onPress={() => setCalendarOpen(false)}
           >
             <View style={styles.calendarContainer}>
-              <Calendar
-                onDayPress={(day) => {
-                  setSelectedDate(day.dateString);
+              <CalendarPicker
+                value={selectedDate}
+                onSelectDate={(date) => {
+                  setSelectedDate(date);
                   setCalendarOpen(false);
                 }}
-                markedDates={
-                  selectedDate ? { [selectedDate]: { selected: true } } : {}
-                }
-                firstDay={1}
+                disabledWeekDays={[0, 1]}
+                showSelectedLabel
               />
             </View>
           </Pressable>

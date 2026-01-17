@@ -10,20 +10,18 @@ import {
   Platform,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { Calendar } from "react-native-calendars";
 import { ThemedText } from "@/components/themed-text";
 import { supabase } from "../services/supabase";
 import { getBlockedSlots, getServices } from "../services/helper";
 import { styles } from "./styles";
+import { CalendarPicker } from "@/components/ui/calendar/CalendarPicker";
+import { Period, Service } from "../features/appointments/types";
 
 type Client = {
   id: string;
   first_name: string;
   last_name: string;
 };
-
-type Service = "TAGLIO" | "BARBA" | "TAGLIO+BARBA";
-type Period = "MATTINO" | "POMERIGGIO";
 
 type AppointmentData = {
   appointment_date: string;
@@ -51,6 +49,7 @@ export default function EditAppointment() {
   // Date state
   const [day, setDay] = useState("");
   const [calendarOpen, setCalendarOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
   // Hour state
   const [hour, setHour] = useState("");
@@ -63,37 +62,8 @@ export default function EditAppointment() {
   const [originalAppointmentTime, setOriginalAppointmentTime] = useState("");
 
   const blockedSlots = service ? getBlockedSlots(bookedHours, service) : [];
-  const today = new Date();
-  const currentMonth = today.getMonth();
-  const currentYear = today.getFullYear();
 
-  const maxMonthDate = new Date(currentYear, currentMonth + 12, 1);
-
-  const [visibleMonth, setVisibleMonth] = useState({
-    month: currentMonth,
-    year: currentYear,
-  });
-
-  const disableArrowLeft =
-    visibleMonth.year < currentYear ||
-    (visibleMonth.year === currentYear && visibleMonth.month <= currentMonth);
-
-  const disableArrowRight =
-    visibleMonth.year > maxMonthDate.getFullYear() ||
-    (visibleMonth.year === maxMonthDate.getFullYear() &&
-      visibleMonth.month >= maxMonthDate.getMonth());
-
-  const minDate = new Date(currentYear, currentMonth, 1)
-    .toISOString()
-    .split("T")[0];
-
-  const maxDate = new Date(currentYear, currentMonth + 12, 31)
-    .toISOString()
-    .split("T")[0];
-
-  /* =======================
-     LOAD APPOINTMENT
-     ======================= */
+  //LOAD APPOINTMENT
   useEffect(() => {
     if (!id) return;
 
@@ -148,9 +118,7 @@ export default function EditAppointment() {
     load();
   }, [id]);
 
-  /* =======================
-     LOAD CLIENTS
-     ======================= */
+  //LOAD CLIENTS
   useEffect(() => {
     const loadClients = async () => {
       const { data } = await supabase
@@ -164,9 +132,7 @@ export default function EditAppointment() {
     loadClients();
   }, []);
 
-  /* =======================
-     LOAD BOOKED HOURS
-     ======================= */
+  //LOAD BOOKED HOURS
   useEffect(() => {
     if (!day) return;
 
@@ -189,9 +155,7 @@ export default function EditAppointment() {
     loadBookedHours();
   }, [day, id]);
 
-  /* =======================
-     GENERATE HOUR SLOTS
-     ======================= */
+  //GENERATE HOUR SLOTS
   const generateSlots = (): string[] => {
     if (!period) return [];
 
@@ -228,9 +192,7 @@ export default function EditAppointment() {
   };
   const slots = generateSlots();
 
-  /* =======================
-     FORMAT DATE
-     ======================= */
+  //FORMAT DATE
   const formatDate = (dateString: string) => {
     if (!dateString) return "Seleziona data";
     const date = new Date(dateString + "T00:00:00");
@@ -242,42 +204,7 @@ export default function EditAppointment() {
     });
   };
 
-  /* =======================
-     DISABLED DATES
-     ======================= */
-  const getDisabledDates = () => {
-    const disabled: {
-      [key: string]: { disabled: boolean; disableTouchEvent: boolean };
-    } = {};
-    const today = new Date();
-    const startDate = new Date(today.getFullYear(), today.getMonth(), 1);
-    const endDate = new Date(today.getFullYear(), today.getMonth() + 13, 0);
-
-    for (
-      let d = new Date(startDate);
-      d <= endDate;
-      d.setDate(d.getDate() + 1)
-    ) {
-      const dayOfWeek = d.getDay();
-      const dateStr = d.toISOString().split("T")[0];
-
-      // Disabilita Domenica (1) e Lunedì (2)
-      if (dayOfWeek === 1 || dayOfWeek === 2) {
-        disabled[dateStr] = { disabled: true, disableTouchEvent: true };
-      }
-
-      // Disabilita date passate
-      if (d < today) {
-        disabled[dateStr] = { disabled: true, disableTouchEvent: true };
-      }
-    }
-
-    return disabled;
-  };
-
-  /* =======================
-     SAVE
-     ======================= */
+  //SAVE
   const handleSave = async () => {
     const message = `Sei sicuro di voler modificare l'appuntamento?`;
     const updateSuccess = `Appuntamento aggiornato correttamente`;
@@ -342,9 +269,7 @@ export default function EditAppointment() {
 
   if (loading) return null;
 
-  /* =======================
-     RENDER
-     ======================= */
+  //RENDER
   return (
     <ScrollView style={styles.container}>
       <ThemedText type="title">Modifica appuntamento</ThemedText>
@@ -453,36 +378,15 @@ export default function EditAppointment() {
           onPress={() => setCalendarOpen(false)}
         >
           <View style={styles.calendarContainer}>
-            <Calendar
-              current={`${visibleMonth.year}-${String(
-                visibleMonth.month + 1
-              ).padStart(2, "0")}-01`}
-              onMonthChange={(month) => {
-                setVisibleMonth({
-                  month: month.month - 1, // calendar usa 1–12
-                  year: month.year,
-                });
-              }}
-              onDayPress={(selectedDay) => {
-                setDay(selectedDay.dateString);
-                setHour("");
+            <CalendarPicker
+              value={selectedDate}
+              onSelectDate={(date) => {
+                setSelectedDate(date);
+                setDay(date);
                 setCalendarOpen(false);
               }}
-              markedDates={{
-                ...getDisabledDates(),
-                [day]: { selected: true, selectedColor: "green" },
-              }}
-              theme={{
-                todayTextColor: "green",
-                arrowColor: "green",
-              }}
-              minDate={minDate}
-              maxDate={maxDate}
-              disableArrowLeft={disableArrowLeft}
-              disableArrowRight={disableArrowRight}
-              enableSwipeMonths={false}
-              hideExtraDays
-              firstDay={1}
+              disabledWeekDays={[0, 1]}
+              showSelectedLabel
             />
           </View>
         </Pressable>

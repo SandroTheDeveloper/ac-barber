@@ -1,11 +1,9 @@
 import { useMemo, useState } from "react";
 import { View } from "react-native";
 import { ThemedText } from "@/components/themed-text";
-import { useRouter } from "expo-router";
 import { Calendar } from "react-native-calendars";
 import { styles } from "./calendar.styles";
 import { CalendarPickerProps } from "./types";
-import { useUserRole } from "@/hooks/use-role-user";
 
 export function CalendarPicker({
   value,
@@ -15,9 +13,6 @@ export function CalendarPicker({
   disabledWeekDays = [],
   showSelectedLabel = false,
 }: CalendarPickerProps) {
-  const router = useRouter();
-  const { role, loading } = useUserRole();
-
   const today = useMemo(() => {
     const d = new Date();
     d.setHours(0, 0, 0, 0);
@@ -99,11 +94,6 @@ export function CalendarPicker({
         onDayPress={(day) => {
           setSelectedDate(day.dateString);
           onSelectDate(day.dateString);
-          role !== "ADMIN"
-            ? router.push(
-                `/appointment-flow?date=${encodeURIComponent(day.dateString)}`
-              )
-            : "";
         }}
         theme={{
           todayTextColor: "green",

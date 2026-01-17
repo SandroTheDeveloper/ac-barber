@@ -2,9 +2,7 @@ import { Pressable, View } from "react-native";
 import { ThemedText } from "@/components/themed-text";
 import { ForwardedRef, forwardRef, JSX, useImperativeHandle } from "react";
 import { styles } from "./styles";
-
-export type Service = "TAGLIO" | "BARBA" | "TAGLIO+BARBA";
-export type Period = "MATTINO" | "POMERIGGIO";
+import { Period, Service } from "../features/appointments/types";
 
 type SelectHourProps = {
   service: Service | null;
