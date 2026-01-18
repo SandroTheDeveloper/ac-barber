@@ -185,8 +185,7 @@ export const styles = StyleSheet.create({
   },
 
   disabledBtn: {
-    opacity: 0.5,
-    backgroundColor: "#f5f5f5",
+    display: "none"
   },
   
   summary: {

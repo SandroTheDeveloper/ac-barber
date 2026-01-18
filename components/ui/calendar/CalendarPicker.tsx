@@ -13,16 +13,7 @@ export function CalendarPicker({
   disabledWeekDays = [],
   showSelectedLabel = false,
 }: CalendarPickerProps) {
-  const today = useMemo(() => {
-    const d = new Date();
-    d.setHours(0, 0, 0, 0);
-    return d;
-  }, []);
-
-  const [visibleMonth, setVisibleMonth] = useState({
-    month: today.getMonth(),
-    year: today.getFullYear(),
-  });
+  const today = useMemo(() => new Date(), []);
 
   const toLocaleDateString = (date: Date) => {
     const y = date.getFullYear();
@@ -30,11 +21,25 @@ export function CalendarPicker({
     const d = String(date.getDate()).padStart(2, "0");
     return `${y}-${m}-${d}`;
   };
-  //DATE LIMITS
-  const min = minDate ?? today.toISOString().split("T")[0];
-  const maxDateObj = new Date(today.getFullYear(), today.getMonth() + 12, 0);
-  const max = maxDate ?? maxDateObj.toISOString().split("T")[0];
 
+  //DATE LIMITS
+  const todayStr = useMemo(() => toLocaleDateString(today), [today]);
+
+  //MIN DATE
+  const min = useMemo(() => {
+    return minDate && minDate > todayStr ? minDate : todayStr;
+  }, [minDate, todayStr]);
+
+  const maxDateObj = useMemo(() => {
+    return new Date(today.getFullYear(), today.getMonth() + 12, 0);
+  }, [today]);
+
+  const max = maxDate ?? toLocaleDateString(maxDateObj);
+
+  const [visibleMonth, setVisibleMonth] = useState({
+    month: today.getMonth(),
+    year: today.getFullYear(),
+  });
   //STATE
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
 

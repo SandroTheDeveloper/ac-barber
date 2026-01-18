@@ -3,6 +3,7 @@ import { ThemedText } from "@/components/themed-text";
 import { ForwardedRef, forwardRef, JSX, useImperativeHandle } from "react";
 import { styles } from "./styles";
 import { Period, Service } from "../features/appointments/types";
+import { getBlockedSlots } from "../services/helper";
 
 type SelectHourProps = {
   service: Service | null;
@@ -17,47 +18,6 @@ type SelectHourProps = {
   onBackFromService: () => void;
   onBackFromPeriod: () => void;
   onBackFromHour: () => void;
-};
-
-const toMinutes = (time: string) => {
-  const [h, m] = time.split(":").map(Number);
-  return h * 60 + m;
-};
-
-const getServiceDuration = (service: Service) => {
-  switch (service) {
-    case "BARBA":
-      return 30;
-    case "TAGLIO":
-    case "TAGLIO+BARBA":
-      return 60;
-    default:
-      return 0;
-  }
-};
-
-const interval = 15;
-
-const getBlockedSlots = (bookedHours: string[], service: Service): string[] => {
-  const duration = getServiceDuration(service);
-  const slotsToBlock = duration / interval;
-
-  const blocked = new Set<string>();
-
-  bookedHours.forEach((start) => {
-    const startMinutes = toMinutes(start);
-
-    for (let i = 0; i < slotsToBlock; i++) {
-      const minutes = startMinutes + i * interval;
-      const h = Math.floor(minutes / 60)
-        .toString()
-        .padStart(2, "0");
-      const m = (minutes % 60).toString().padStart(2, "0");
-      blocked.add(`${h}:${m}`);
-    }
-  });
-
-  return Array.from(blocked);
 };
 
 export const SelectHour = forwardRef(
@@ -77,7 +37,6 @@ export const SelectHour = forwardRef(
     ref: ForwardedRef<{ onBackFromPeriod: () => void }>
   ): JSX.Element => {
     const interval = 15;
-    const CELL_SIZE = 70;
 
     const generateSlots = (): string[] => {
       if (!period) return [];

@@ -13,6 +13,7 @@ import { Stack, useRouter } from "expo-router";
 import { useClients } from "../features/clients/hooks/useClients";
 import { Client } from "../features/clients/types";
 import { styles } from "./styles";
+import ButtonWhatsApp from "@/components/ui/button/ButtonWhatsApp";
 
 export default function ClientsScreen() {
   const PAGE_SIZE = 10;
@@ -70,7 +71,6 @@ export default function ClientsScreen() {
   );
 
   const totalPages = Math.ceil(filteredClients.length / PAGE_SIZE);
-
   // 🔹 Render singolo cliente
   const renderItem = ({ item }: { item: Client }) => (
     <View style={styles.card}>
@@ -92,6 +92,12 @@ export default function ClientsScreen() {
       )}
 
       <View style={styles.actions}>
+        <ButtonWhatsApp
+          phone={item.phone}
+          message="Ciao, sono Fabrizio"
+          label="Contatta"
+          style={""}
+        />
         <Pressable
           style={[styles.actionBtn, styles.editBtn]}
           onPress={() => handleEdit(item)}

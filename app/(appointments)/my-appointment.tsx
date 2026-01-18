@@ -1,6 +1,5 @@
 import {
   View,
-  TextInput,
   Pressable,
   Modal,
   FlatList,
@@ -100,10 +99,6 @@ export default function MyAppointment() {
 
     return (
       <View style={styles.card}>
-        <ThemedText type="defaultSemiBold" style={styles.name}>
-          {item.client?.first_name} {item.client?.last_name}
-        </ThemedText>
-
         {/* 📅 Giorno della settimana + data */}
         <View style={styles.row}>
           <Ionicons name="calendar-outline" size={16} color="#555" />
@@ -210,17 +205,7 @@ export default function MyAppointment() {
         }}
       />
       <View style={styles.container}>
-        <ThemedText type="title">Lista Appuntamenti</ThemedText>
-        {/* 🔍 Search */}
-        <TextInput
-          placeholder="Cerca per nome, cognome o tipo di servizio"
-          value={search}
-          onChangeText={(text) => {
-            setSearch(text);
-            setCurrentPage(0);
-          }}
-          style={styles.search}
-        />
+        <ThemedText type="title">I tuoi appuntamenti</ThemedText>
         <View style={styles.filterRow}>
           {[
             { label: "TUTTI", value: "ALL" },

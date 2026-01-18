@@ -29,7 +29,19 @@ export function formatAppointmentDate(
   };
 }
 
-// ✅ Configurazione italiana del calendario
+  //FORMAT DATE
+  export function formatDate (dateString: string) {
+    if (!dateString) return "Seleziona data";
+    const date = new Date(dateString + "T00:00:00");
+    return date.toLocaleDateString("it-IT", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
+
+// Configurazione italiana del calendario
 LocaleConfig.locales["it"] = {
   monthNames: [
     "Gennaio",

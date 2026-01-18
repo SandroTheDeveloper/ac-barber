@@ -12,7 +12,7 @@ import {
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ThemedText } from "@/components/themed-text";
 import { supabase } from "../services/supabase";
-import { getBlockedSlots, getServices } from "../services/helper";
+import { formatDate, getBlockedSlots, getServices } from "../services/helper";
 import { styles } from "./styles";
 import { CalendarPicker } from "@/components/ui/calendar/CalendarPicker";
 import { Period, Service } from "../features/appointments/types";
@@ -192,18 +192,6 @@ export default function EditAppointment() {
     return hours;
   };
   const slots = generateSlots();
-
-  //FORMAT DATE
-  const formatDate = (dateString: string) => {
-    if (!dateString) return "Seleziona data";
-    const date = new Date(dateString + "T00:00:00");
-    return date.toLocaleDateString("it-IT", {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
 
   //SAVE
   const handleSave = async () => {
