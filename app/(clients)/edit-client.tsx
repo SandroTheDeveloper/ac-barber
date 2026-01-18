@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
-import { View, TextInput, Pressable, StyleSheet, Alert } from "react-native";
+import { View, TextInput, Alert } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ThemedText } from "@/components/themed-text";
 import { useClient } from "../features/clients/hooks/useClient";
 import { styles } from "./styles";
+import { ButtonConfirm } from "@/components/ui/button/ButtonConfirm";
+import { ButtonCancel } from "@/components/ui/button/ButtonCancel";
 
 export default function EditClient() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -74,9 +76,8 @@ export default function EditClient() {
         keyboardType="email-address"
       />
 
-      <Pressable style={styles.button} onPress={handleSave}>
-        <ThemedText>Salva modifiche</ThemedText>
-      </Pressable>
+      <ButtonConfirm onPress={handleSave} message="Conferma"></ButtonConfirm>
+      <ButtonCancel />
     </View>
   );
 }

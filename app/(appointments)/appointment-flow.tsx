@@ -10,6 +10,8 @@ import { supabase } from "../services/supabase";
 import { getBookedHours } from "../features/appointments/api";
 import { styles } from "./styles";
 import { Period, Service } from "../features/appointments/types";
+import { ButtonDefault } from "@/components/ui/button/ButtonDefault";
+import { ButtonConfirm } from "@/components/ui/button/ButtonConfirm";
 
 type AppointmentFlowProps = {
   onBackFromPeriod: () => void;
@@ -92,12 +94,10 @@ export default function AppointmentFlow({
         <ThemedText style={styles.summary}>🌤️ {period}</ThemedText>
         <ThemedText style={styles.summary}>⏰ {hour}</ThemedText>
 
-        <Pressable
-          style={styles.button}
+        <ButtonDefault
           onPress={() => router.replace("/(tabs)/mio-profilo")}
-        >
-          <ThemedText>Le mie prenotazioni</ThemedText>
-        </Pressable>
+          message=">Le mie prenotazioni"
+        ></ButtonDefault>
       </ThemedView>
     );
   }
@@ -116,12 +116,13 @@ export default function AppointmentFlow({
 
       {service && period && hour && (
         <View style={{ flexDirection: "row", gap: 12, marginTop: 12 }}>
-          <Pressable style={styles.button} onPress={handleConfirm}>
-            <ThemedText>Conferma prenotazione</ThemedText>
-          </Pressable>
+          <ButtonConfirm
+            onPress={handleConfirm}
+            message="Conferma prenotazione"
+          ></ButtonConfirm>
           <Pressable
             onPress={() => selectHourRef.current?.onBackFromPeriod()}
-            style={styles.button}
+            style={styles.buttonCancel}
           >
             <ThemedText>← Indietro</ThemedText>
           </Pressable>

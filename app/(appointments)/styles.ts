@@ -80,15 +80,6 @@ export const styles = StyleSheet.create({
     width: "90%",
   },
 
-  button: {
-    backgroundColor: "green",
-    padding: 12,
-    borderRadius: 8,
-    alignItems: "center",
-    marginTop: 16,
-    marginBottom: 40,
-    color: "#ffffffff",
-  },
   buttonCancel: {
     backgroundColor: "white",
     padding: 12,

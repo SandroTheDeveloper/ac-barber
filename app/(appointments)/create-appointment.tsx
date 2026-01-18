@@ -16,6 +16,8 @@ import { getBlockedSlots, getServices } from "../services/helper";
 import { styles } from "./styles";
 import { CalendarPicker } from "@/components/ui/calendar/CalendarPicker";
 import { Period, Service } from "../features/appointments/types";
+import { ButtonConfirm } from "@/components/ui/button/ButtonConfirm";
+import { ButtonCancel } from "@/components/ui/button/ButtonCancel";
 
 type Client = {
   id: string;
@@ -469,12 +471,8 @@ export default function EditAppointment() {
         </>
       )}
 
-      <Pressable style={styles.button} onPress={handleSave}>
-        <ThemedText>Conferma</ThemedText>
-      </Pressable>
-      <Pressable style={styles.buttonCancel} onPress={router.back}>
-        <ThemedText>Annulla</ThemedText>
-      </Pressable>
+      <ButtonConfirm onPress={handleSave} message="Conferma"></ButtonConfirm>
+      <ButtonCancel />
     </ScrollView>
   );
 }

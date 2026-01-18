@@ -1,10 +1,8 @@
-import { Pressable } from "react-native";
-
 import ParallaxScrollView from "@/components/parallax-scroll-view";
-import { ThemedText } from "@/components/themed-text";
 import { Stack, useRouter } from "expo-router";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { styles } from "./styles";
+import { ButtonDefault } from "@/components/ui/button/ButtonDefault";
 
 export default function MioProfilo() {
   const router = useRouter();
@@ -30,19 +28,15 @@ export default function MioProfilo() {
           headerBackTitle: "Indietro", // iOS
         }}
       />
-      <Pressable
-        style={[styles.button]}
+      <ButtonDefault
         onPress={() => router.push("/(appointments)/my-appointment")}
-      >
-        <ThemedText>Le mie prenotazioni</ThemedText>
-      </Pressable>
+        message="Le mie prenotazioni"
+      ></ButtonDefault>
 
-      <Pressable
-        style={[styles.button]}
+      <ButtonDefault
         onPress={() => router.push("/reset-password")}
-      >
-        <ThemedText>Reset password</ThemedText>
-      </Pressable>
+        message="Reset password"
+      ></ButtonDefault>
     </ParallaxScrollView>
   );
 }

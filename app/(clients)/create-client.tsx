@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { View, TextInput, Pressable, Alert, Platform } from "react-native";
+import { View, TextInput, Alert, Platform } from "react-native";
 import { Stack, useRouter } from "expo-router";
-import { ThemedText } from "@/components/themed-text";
 import { useUserRole } from "@/hooks/use-role-user";
 import { supabase } from "../services/supabase";
 import { useClients } from "../features/clients/hooks/useClients";
 import { styles } from "./styles";
+import { ButtonConfirm } from "@/components/ui/button/ButtonConfirm";
 
 export default function CreateClient() {
   const [firstName, setFirstName] = useState("");
@@ -136,11 +136,10 @@ export default function CreateClient() {
           />
         )}
 
-        <Pressable style={styles.button} onPress={handleSubmit}>
-          <ThemedText>
-            {role === "ADMIN" ? "Aggiungi" : "Registrati"}
-          </ThemedText>
-        </Pressable>
+        <ButtonConfirm
+          onPress={handleSubmit}
+          message={role === "ADMIN" ? "Aggiungi" : "Registrati"}
+        ></ButtonConfirm>
       </View>
     </>
   );

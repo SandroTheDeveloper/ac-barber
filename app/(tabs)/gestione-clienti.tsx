@@ -1,8 +1,7 @@
 import React from "react";
-import { View, Pressable } from "react-native";
-import { ThemedText } from "@/components/themed-text";
+import { View } from "react-native";
 import { Stack, useRouter } from "expo-router";
-import { styles } from "./styles";
+import { ButtonDefault } from "@/components/ui/button/ButtonDefault";
 
 export default function GestioneClienti() {
   const router = useRouter();
@@ -15,41 +14,25 @@ export default function GestioneClienti() {
           headerBackTitle: "Indietro", // iOS
         }}
       />
-      <Pressable
-        style={styles.card}
+      <ButtonDefault
         onPress={() => router.push("/(clients)/create-client")}
-      >
-        <ThemedText type="defaultSemiBold" style={styles.name}>
-          Aggiungi un cliente
-        </ThemedText>
-      </Pressable>
+        message="Aggiungi un cliente"
+      ></ButtonDefault>
 
-      <Pressable
-        style={styles.card}
+      <ButtonDefault
         onPress={() => router.push("/get-clients")}
-      >
-        <ThemedText type="defaultSemiBold" style={styles.name}>
-          Gestisci clienti
-        </ThemedText>
-      </Pressable>
+        message="Gestisci clienti"
+      ></ButtonDefault>
 
-      <Pressable
-        style={styles.card}
+      <ButtonDefault
         onPress={() => router.push("/get-appointments")}
-      >
-        <ThemedText type="defaultSemiBold" style={styles.name}>
-          Vedi appuntamenti
-        </ThemedText>
-      </Pressable>
+        message="Vedi appuntamenti"
+      ></ButtonDefault>
 
-      <Pressable
-        style={styles.card}
+      <ButtonDefault
         onPress={() => router.push("/create-appointment")}
-      >
-        <ThemedText type="defaultSemiBold" style={styles.name}>
-          Aggiungi appuntamento
-        </ThemedText>
-      </Pressable>
+        message="Aggiungi appuntamento"
+      ></ButtonDefault>
     </View>
   );
 }
