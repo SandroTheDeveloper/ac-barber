@@ -7,7 +7,7 @@ import {
   SelectHourProps,
   Service,
 } from "../features/appointments/types";
-import { getBlockedSlots } from "../services/helper";
+import { generateSlots, getBlockedSlots } from "../services/helper";
 import { ButtonConfirm } from "@/components/ui/button/ButtonConfirm";
 
 export const SelectHour = forwardRef(
@@ -17,6 +17,7 @@ export const SelectHour = forwardRef(
       period,
       selectedHour,
       bookedHours,
+      day,
       onSelectService,
       onSelectPeriod,
       onSelectHour,
@@ -26,29 +27,7 @@ export const SelectHour = forwardRef(
     }: SelectHourProps,
     ref: ForwardedRef<{ onBackFromPeriod: () => void }>
   ): JSX.Element => {
-    const interval = 15;
-
-    const generateSlots = (): string[] => {
-      if (!period) return [];
-
-      const hours: string[] = [];
-      const startHour = period === "MATTINO" ? 9 : 14;
-      const endHour = period === "MATTINO" ? 13 : 19;
-
-      for (let h = startHour; h <= endHour; h++) {
-        for (let m = 0; m < 60; m += interval) {
-          if (period === "MATTINO" && h === 13 && m > 45) continue;
-          if (period === "POMERIGGIO" && h === 19 && m > 0) continue;
-
-          hours.push(
-            `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}`
-          );
-        }
-      }
-      return hours;
-    };
-
-    const slots = generateSlots();
+    const slots = generateSlots(period, day);
 
     const handleBackFromPeriod = () => {
       onBackFromPeriod();

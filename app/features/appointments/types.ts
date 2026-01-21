@@ -20,6 +20,7 @@ export type SelectHourProps = {
   period: Period | null;
   selectedHour?: string;
   bookedHours: string[];
+  day: string;
 
   onSelectService: (service: Service) => void;
   onSelectPeriod: (period: Period) => void;

@@ -12,7 +12,12 @@ import {
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ThemedText } from "@/components/themed-text";
 import { supabase } from "../services/supabase";
-import { formatDate, getBlockedSlots, getServices } from "../services/helper";
+import {
+  formatDate,
+  generateSlots,
+  getBlockedSlots,
+  getServices,
+} from "../services/helper";
 import { styles } from "./styles";
 import { CalendarPicker } from "@/components/ui/calendar/CalendarPicker";
 import { Period, Service } from "../features/appointments/types";
@@ -157,42 +162,7 @@ export default function EditAppointment() {
     loadBookedHours();
   }, [day, id]);
 
-  //GENERATE HOUR SLOTS
-  const generateSlots = (): string[] => {
-    if (!period) return [];
-
-    const hours: string[] = [];
-    const startHour = period === "MATTINO" ? 9 : 14;
-    const endHour = period === "MATTINO" ? 13 : 19;
-    const interval = 15;
-
-    for (let h = startHour; h <= endHour; h++) {
-      for (let m = 0; m < 60; m += interval) {
-        if (period === "MATTINO" && h === 13 && m > 45) continue;
-        if (period === "POMERIGGIO" && h === 19 && m > 0) continue;
-
-        const timeStr = `${h.toString().padStart(2, "0")}:${m
-          .toString()
-          .padStart(2, "0")}`;
-
-        // Se è oggi, filtra gli orari passati
-        const today = new Date();
-        const selectedDate = new Date(day + "T00:00:00");
-
-        if (selectedDate.toDateString() === today.toDateString()) {
-          const [hh, mm] = timeStr.split(":");
-          const slotTime = new Date();
-          slotTime.setHours(parseInt(hh), parseInt(mm), 0, 0);
-
-          if (slotTime <= today) continue;
-        }
-
-        hours.push(timeStr);
-      }
-    }
-    return hours;
-  };
-  const slots = generateSlots();
+  const slots = generateSlots(period, day);
 
   //SAVE
   const handleSave = async () => {

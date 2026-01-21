@@ -1,5 +1,5 @@
 import { LocaleConfig } from "react-native-calendars";
-import { Service } from "../features/appointments/types";
+import { Period, Service } from "../features/appointments/types";
 
 export function formatAppointmentDate(
   date: string,
@@ -128,4 +128,39 @@ export function getBlockedSlots (bookedHours: string[], service: Service): strin
   });
 
   return Array.from(blocked);
+};
+
+//GENERATE HOUR SLOTS
+export function generateSlots (period: Period | null, day: string): string[] {
+  if (!period) return [];
+
+  const hours: string[] = [];
+  const startHour = period === "MATTINO" ? 9 : 14;
+  const endHour = period === "MATTINO" ? 13 : 19;
+  const interval = 15;
+
+  const now = new Date();
+  // Creiamo un riferimento per l'inizio di oggi senza ore/minuti
+  const todayStr = now.toISOString().split('T')[0]; 
+
+  for (let h = startHour; h <= endHour; h++) {
+    for (let m = 0; m < 60; m += interval) {
+      // Limiti di fine turno
+      if (period === "MATTINO" && h === 13 && m > 45) continue;
+      if (period === "POMERIGGIO" && h === 19 && m > 0) continue;
+
+      const timeStr = `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}`;
+
+      // Controllo orario passato (solo se la data scelta è oggi)
+      if (day === todayStr) {
+        const slotTime = new Date();
+        slotTime.setHours(h, m, 0, 0);
+        
+        if (slotTime <= now) continue;
+      }
+
+      hours.push(timeStr);
+    }
+  }
+  return hours;
 };
