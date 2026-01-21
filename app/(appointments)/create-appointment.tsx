@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   View,
   TextInput,
@@ -7,231 +7,65 @@ import {
   FlatList,
   Modal,
   ScrollView,
-  Platform,
+  ActivityIndicator,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ThemedText } from "@/components/themed-text";
-import { supabase } from "../services/supabase";
-import {
-  formatDate,
-  generateSlots,
-  getBlockedSlots,
-  getServices,
-} from "../services/helper";
+import { formatDate, getServices } from "../services/helper";
 import { styles } from "./styles";
 import { CalendarPicker } from "@/components/ui/calendar/CalendarPicker";
-import { Period, Service } from "../features/appointments/types";
 import { ButtonConfirm } from "@/components/ui/button/ButtonConfirm";
 import { ButtonCancel } from "@/components/ui/button/ButtonCancel";
+import { Period } from "../features/appointments/types";
+import { useCreateAppointment } from "../features/appointments/hooks/useCreateAppointment";
 
-type Client = {
-  id: string;
-  first_name: string;
-  last_name: string;
-};
-
-type AppointmentData = {
-  appointment_date: string;
-  appointment_time: string;
-  service: string;
-  client_id: string;
-  clients: Client;
-};
-
-export default function EditAppointment() {
+export default function CreateAppointment() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
 
-  // Client state
-  const [clientId, setClientId] = useState<string | null>(null);
-  const [clientLabel, setClientLabel] = useState("");
-  const [clientQuery, setClientQuery] = useState("");
-  const [clients, setClients] = useState<Client[]>([]);
+  // Hook Custom: gestisce tutta la logica di stato e database
+  const { state, actions } = useCreateAppointment(id);
+
+  // Stati locali per la gestione dell'interfaccia (apertura/chiusura menu)
   const [dropdownClientOpen, setDropdownClientOpen] = useState(false);
-
-  // Service state
-  const [service, setService] = useState<Service | null>(null);
+  const [clientQuery, setClientQuery] = useState("");
   const [dropdownServiceOpen, setDropdownServiceOpen] = useState(false);
-
-  // Date state
-  const [day, setDay] = useState("");
   const [calendarOpen, setCalendarOpen] = useState(false);
-
-  // Hour state
-  const [hour, setHour] = useState<string | null>(null);
-  const [period, setPeriod] = useState<Period | null>(null);
   const [dropdownPeriodOpen, setDropdownPeriodOpen] = useState(false);
   const [dropdownHourOpen, setDropdownHourOpen] = useState(false);
-  const [bookedHours, setBookedHours] = useState<string[]>([]);
-  const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
-  const [loading, setLoading] = useState(true);
-  const [originalAppointmentTime, setOriginalAppointmentTime] = useState("");
-
-  const blockedSlots = service ? getBlockedSlots(bookedHours, service) : [];
-  //LOAD APPOINTMENT
-  useEffect(() => {
-    if (!id) return;
-
-    const load = async () => {
-      const { data, error } = await supabase
-        .from("appointments")
-        .select(
-          `
-          appointment_date,
-          appointment_time,
-          service,
-          client_id,
-          clients (
-            id,
-            first_name,
-            last_name
-          )
-        `
-        )
-        .eq("id", id)
-        .single();
-
-      const appointmentData = data as AppointmentData | null;
-
-      if (error || !appointmentData) {
-        Alert.alert("Errore", "Appuntamento non trovato");
-        router.back();
-        return;
-      }
-
-      const client = appointmentData.clients;
-      const cleanHour = appointmentData.appointment_time.slice(0, 5);
-
-      setDay(appointmentData.appointment_date);
-      setHour(cleanHour);
-      setOriginalAppointmentTime(cleanHour);
-      setService(appointmentData.service as Service);
-      setClientId(appointmentData.client_id);
-
-      // Determina il periodo in base all'orario
-      const hourNum = parseInt(appointmentData.appointment_time.split(":")[0]);
-      setPeriod(hourNum < 14 ? "MATTINO" : "POMERIGGIO");
-
-      if (client) {
-        const clientLabel = `${client.first_name} ${client.last_name}`;
-        setClientLabel(clientLabel);
-        setClientQuery(clientLabel);
-      }
-      setLoading(false);
-    };
-
-    load();
-  }, [id]);
-
-  //LOAD CLIENTS
-  useEffect(() => {
-    const loadClients = async () => {
-      const { data } = await supabase
-        .from("clients")
-        .select("id, first_name, last_name")
-        .order("last_name");
-
-      if (data) setClients(data);
-    };
-
-    loadClients();
-  }, []);
-
-  //LOAD BOOKED HOURS
-  useEffect(() => {
-    if (!day) return;
-
-    const loadBookedHours = async () => {
-      const { data, error } = await supabase
-        .from("appointments")
-        .select("appointment_time, id")
-        .eq("appointment_date", day)
-        .eq("status", "CONFIRMED");
-
-      if (!error && data) {
-        // Escludi l'orario dell'appuntamento corrente
-        const hours = data
-          .filter((a) => a.id !== id)
-          .map((a) => a.appointment_time.slice(0, 5));
-        setBookedHours(hours);
-      }
-    };
-
-    loadBookedHours();
-  }, [day, id]);
-
-  const slots = generateSlots(period, day);
-
-  //SAVE
   const handleSave = async () => {
-    const message = `Sei sicuro di voler aggiungere l'appuntamento?`;
-    const updateSuccess = `Appuntamento aggiunto con successo`;
-
-    if (!clientId) {
-      Alert.alert("Errore", "Seleziona un cliente");
-      return;
-    }
-
-    if (!service) {
-      Alert.alert("Errore", "Seleziona un servizio");
-      return;
-    }
-
-    if (!day) {
-      Alert.alert("Errore", "Seleziona una data");
-      return;
-    }
-
-    if (!hour) {
-      Alert.alert("Errore", "Seleziona un orario");
-      return;
-    }
-
-    const { error } = await supabase
-      .from("appointments")
-      .insert({
-        client_id: clientId,
-        appointment_date: day,
-        appointment_time: hour,
-        service,
-        period,
-      })
-      .eq("id", id);
-
-    if (error) {
-      Alert.alert("Errore", error.message);
-    } else {
-      if (Platform.OS === "web") {
-        const confirmed = window.confirm(message);
-        if (!confirmed) return;
-        window.confirm(updateSuccess);
-        updateAndRefresh(id);
-      } else {
-        Alert.alert("Aggiorna appuntamento", message, [
-          { text: "Annulla", style: "cancel" },
-          {
-            text: "Aggiorna",
-            style: "destructive",
-            onPress: async () => updateAndRefresh(id),
-          },
-        ]);
-      }
-      Alert.alert("Salvato", updateSuccess);
-      router.back();
+    try {
+      await actions.save();
+      Alert.alert("Successo", "Appuntamento registrato con successo");
+      router.replace("/get-appointments");
+    } catch (error: any) {
+      Alert.alert(
+        "Errore",
+        error.message || "Si è verificato un errore durante il salvataggio"
+      );
     }
   };
 
-  const updateAndRefresh = async (id: string) => {
-    router.replace("/get-appointments");
-  };
+  if (state.loading) {
+    return (
+      <View style={[styles.createAppContainer, { justifyContent: "center" }]}>
+        <ActivityIndicator size="large" color="#000" />
+      </View>
+    );
+  }
 
-  //RENDER
   return (
-    <ScrollView style={styles.createAppContainer}>
-      <ThemedText type="title">Crea un nuovo appuntamento</ThemedText>
+    <ScrollView
+      style={styles.createAppContainer}
+      keyboardShouldPersistTaps="handled"
+    >
+      <ThemedText type="title" style={{ marginBottom: 20 }}>
+        {id ? "Modifica Appuntamento" : "Crea un nuovo appuntamento"}
+      </ThemedText>
 
       {/* DROPDOWN CLIENTE */}
+      <ThemedText style={styles.label}>Cliente</ThemedText>
       <Pressable
         onPress={() => {
           setDropdownClientOpen((v) => !v);
@@ -239,28 +73,24 @@ export default function EditAppointment() {
         }}
         style={styles.input}
       >
-        <ThemedText>{clientLabel || "Seleziona cliente"}</ThemedText>
+        <ThemedText>{state.clientLabel || "Seleziona cliente"}</ThemedText>
       </Pressable>
 
       {dropdownClientOpen && (
         <>
           <Pressable
             style={styles.overlay}
-            onPress={() => {
-              setDropdownClientOpen(false);
-              setClientQuery("");
-            }}
+            onPress={() => setDropdownClientOpen(false)}
           />
-
           <View style={styles.dropdown}>
             <TextInput
               placeholder="Cerca cliente..."
               onChangeText={setClientQuery}
               style={styles.search}
+              autoFocus
             />
-
             <FlatList
-              data={clients.filter((c) =>
+              data={state.clients.filter((c) =>
                 `${c.first_name} ${c.last_name}`
                   .toLowerCase()
                   .includes(clientQuery.toLowerCase())
@@ -269,10 +99,10 @@ export default function EditAppointment() {
               renderItem={({ item }) => (
                 <Pressable
                   onPress={() => {
-                    setClientId(item.id);
-                    const label = `${item.first_name} ${item.last_name}`;
-                    setClientLabel(label);
-                    setClientQuery(label);
+                    actions.setClientId(item.id);
+                    actions.setClientLabel(
+                      `${item.first_name} ${item.last_name}`
+                    );
                     setDropdownClientOpen(false);
                   }}
                   style={styles.option}
@@ -282,17 +112,20 @@ export default function EditAppointment() {
                   </ThemedText>
                 </Pressable>
               )}
+              style={{ maxHeight: 200 }}
+              nestedScrollEnabled
             />
           </View>
         </>
       )}
 
       {/* DROPDOWN SERVIZIO */}
+      <ThemedText style={styles.label}>Servizio</ThemedText>
       <Pressable
         onPress={() => setDropdownServiceOpen((v) => !v)}
         style={styles.input}
       >
-        <ThemedText>{service || "Seleziona servizio"}</ThemedText>
+        <ThemedText>{state.service || "Seleziona servizio"}</ThemedText>
       </Pressable>
 
       {dropdownServiceOpen && (
@@ -301,13 +134,12 @@ export default function EditAppointment() {
             style={styles.overlay}
             onPress={() => setDropdownServiceOpen(false)}
           />
-
           <View style={styles.dropdown}>
             {getServices().map((s) => (
               <Pressable
                 key={s}
                 onPress={() => {
-                  setService(s);
+                  actions.setService(s);
                   setDropdownServiceOpen(false);
                 }}
                 style={styles.option}
@@ -320,26 +152,21 @@ export default function EditAppointment() {
       )}
 
       {/* CALENDARIO */}
+      <ThemedText style={styles.label}>Data</ThemedText>
       <Pressable onPress={() => setCalendarOpen(true)} style={styles.input}>
-        <ThemedText>{formatDate(day)}</ThemedText>
+        <ThemedText>{formatDate(state.day)}</ThemedText>
       </Pressable>
 
-      <Modal
-        visible={calendarOpen}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setCalendarOpen(false)}
-      >
+      <Modal visible={calendarOpen} transparent animationType="fade">
         <Pressable
           style={styles.modalOverlay}
           onPress={() => setCalendarOpen(false)}
         >
           <View style={styles.calendarContainer}>
             <CalendarPicker
-              value={selectedDate}
+              value={state.day}
               onSelectDate={(date) => {
-                setSelectedDate(date);
-                setDay(date);
+                actions.setDay(date);
                 setCalendarOpen(false);
               }}
               disabledWeekDays={[0, 1]}
@@ -350,11 +177,12 @@ export default function EditAppointment() {
       </Modal>
 
       {/* DROPDOWN PERIODO */}
+      <ThemedText style={styles.label}>Fascia Oraria</ThemedText>
       <Pressable
         onPress={() => setDropdownPeriodOpen((v) => !v)}
         style={styles.input}
       >
-        <ThemedText>{period || "Seleziona periodo"}</ThemedText>
+        <ThemedText>{state.period || "Seleziona periodo"}</ThemedText>
       </Pressable>
 
       {dropdownPeriodOpen && (
@@ -363,14 +191,13 @@ export default function EditAppointment() {
             style={styles.overlay}
             onPress={() => setDropdownPeriodOpen(false)}
           />
-
           <View style={styles.dropdown}>
             {(["MATTINO", "POMERIGGIO"] as Period[]).map((p) => (
               <Pressable
                 key={p}
                 onPress={() => {
-                  setPeriod(p);
-                  setHour(""); // Reset hour quando cambi periodo
+                  actions.setPeriod(p);
+                  actions.setHour(null);
                   setDropdownPeriodOpen(false);
                 }}
                 style={styles.option}
@@ -383,13 +210,14 @@ export default function EditAppointment() {
       )}
 
       {/* DROPDOWN ORARIO */}
-      {period && (
+      {state.period && (
         <>
+          <ThemedText style={styles.label}>Orario</ThemedText>
           <Pressable
             onPress={() => setDropdownHourOpen((v) => !v)}
             style={styles.input}
           >
-            <ThemedText>{hour || "Seleziona orario"}</ThemedText>
+            <ThemedText>{state.hour || "Seleziona orario"}</ThemedText>
           </Pressable>
 
           {dropdownHourOpen && (
@@ -398,17 +226,17 @@ export default function EditAppointment() {
                 style={styles.overlay}
                 onPress={() => setDropdownHourOpen(false)}
               />
-
               <View style={styles.dropdownHour}>
-                <ScrollView>
-                  {slots.map((slot) => {
-                    const isBlocked = blockedSlots.includes(slot);
+                <ScrollView nestedScrollEnabled>
+                  {state.availableSlots.map((slot) => {
+                    // Nota: Qui usiamo state.bookedHours che viene popolato dall'hook
+                    const isBlocked = state.bookedHours.includes(slot);
                     return (
                       <Pressable
                         key={slot}
                         disabled={isBlocked}
                         onPress={() => {
-                          setHour(slot);
+                          actions.setHour(slot);
                           setDropdownHourOpen(false);
                         }}
                         style={[
@@ -429,8 +257,10 @@ export default function EditAppointment() {
         </>
       )}
 
-      <ButtonConfirm onPress={handleSave} message="Conferma"></ButtonConfirm>
-      <ButtonCancel />
+      <View style={{ marginTop: 30, gap: 10, marginBottom: 50 }}>
+        <ButtonConfirm onPress={handleSave} message="Conferma" />
+        <ButtonCancel />
+      </View>
     </ScrollView>
   );
 }

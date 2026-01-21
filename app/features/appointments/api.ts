@@ -2,6 +2,7 @@ import { supabase } from "@/app/services/supabase";
 import { Appointment } from "./types";
 import { DateFilter } from "./hooks/useAppointments";
 
+// GET APPOINTMENT BY ID
 export const getMyAppointments = async (clientId: string) => {
   return supabase
     .from("appointments")
@@ -110,7 +111,7 @@ export async function getAppointments(
     client: a.clients,
   }));
 }
-
+// DELETE APPOINTMENT BY ID
 export async function deleteAppointment(id: string): Promise<boolean> {
   const { error } = await supabase.from("appointments").delete().eq("id", id);
   return !error;

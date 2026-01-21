@@ -140,7 +140,6 @@ export function generateSlots (period: Period | null, day: string): string[] {
   const interval = 15;
 
   const now = new Date();
-  // Creiamo un riferimento per l'inizio di oggi senza ore/minuti
   const todayStr = now.toISOString().split('T')[0]; 
 
   for (let h = startHour; h <= endHour; h++) {
