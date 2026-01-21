@@ -109,6 +109,7 @@ export default function AppointmentFlow({}) {
 
       <SelectHour
         bookedHours={bookedHours}
+        day={""}
         ref={selectHourRef}
         service={service}
         period={period}
