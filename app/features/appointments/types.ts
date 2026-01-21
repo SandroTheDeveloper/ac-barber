@@ -14,3 +14,19 @@ export type Appointment = {
 export type Service = "TAGLIO" | "BARBA" | "TAGLIO+BARBA";
 
 export type Period = "MATTINO" | "POMERIGGIO";
+
+export type SelectHourProps = {
+  service: Service | null;
+  period: Period | null;
+  selectedHour?: string;
+  bookedHours: string[];
+
+  onSelectService: (service: Service) => void;
+  onSelectPeriod: (period: Period) => void;
+  onSelectHour: (hour: string) => void;
+
+  onBackFromService: () => void;
+  onBackFromPeriod: () => void;
+  onBackFromHour: () => void;
+  handleConfirm: () => void;
+};

@@ -192,35 +192,13 @@ export const styles = StyleSheet.create({
     marginTop: 8,
     fontSize: 16,
   },
-
-    containerHour: {
-    marginTop: 20,
-    alignSelf: "center",
-  },
   rowHour: {
     flexDirection: "row",
     justifyContent: "space-between",
     marginBottom: 8,
     gap: 12,
   },
-  buttonHour: {
-    padding: 12,
-    borderWidth: 1,
-    borderRadius: 8,
-    marginBottom: 8,
-    width: 200,
-    height: 50,
-    alignItems: "center",
-  },
   back: { marginBottom: 12 },
-  hour: {
-    width: 70,
-    height: 70,
-    borderWidth: 1,
-    borderRadius: 8,
-    alignItems: "center",
-    justifyContent: "center",
-  },
   selected: { backgroundColor: "green", borderColor: "green" },
   selectedText: { color: "#fff" },
   booked: {
@@ -231,5 +209,59 @@ export const styles = StyleSheet.create({
   bookedText: {
     textDecorationLine: "line-through",
     color: "#999",
+  },
+  containerHour: {
+    marginTop: 20,
+    width: "100%",
+    paddingHorizontal: 10,
+  },
+  
+  buttonHour: {
+    padding: 12,
+    borderWidth: 1,
+    borderRadius: 8,
+    marginBottom: 8,
+    width: "100%",
+    height: 50,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  containerConfirm: {
+    borderRadius: 8,
+    marginBottom: 20,
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  
+  hour: {
+    width: "22.5%", 
+    aspectRatio: 1,
+    borderWidth: 1,
+    borderRadius: 8,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 5,
+    borderColor: "#ccc",
+  },
+
+  hoursGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "flex-start",
+    gap: 10,
+    marginBottom: 10, 
+  },
+  
+  confirmSectionInside: {
+    marginTop: 5, 
+    width: "100%",
+    paddingBottom: 15, 
+    alignItems: 'center', 
+  },
+
+  backUnderGrid: {
+    paddingVertical: 10,
+    marginBottom: 5,
   },
 });

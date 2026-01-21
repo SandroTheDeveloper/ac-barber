@@ -1,5 +1,5 @@
 import { useLocalSearchParams } from "expo-router";
-import { Pressable, View, Alert } from "react-native";
+import { Alert } from "react-native";
 import { useEffect, useRef, useState } from "react";
 
 import { ThemedText } from "@/components/themed-text";
@@ -11,15 +11,8 @@ import { getBookedHours } from "../features/appointments/api";
 import { styles } from "./styles";
 import { Period, Service } from "../features/appointments/types";
 import { ButtonDefault } from "@/components/ui/button/ButtonDefault";
-import { ButtonConfirm } from "@/components/ui/button/ButtonConfirm";
 
-type AppointmentFlowProps = {
-  onBackFromPeriod: () => void;
-};
-
-export default function AppointmentFlow({
-  onBackFromPeriod,
-}: AppointmentFlowProps) {
+export default function AppointmentFlow({}) {
   const { date } = useLocalSearchParams<{ date: string }>();
   const selectedDate = date ? new Date(decodeURIComponent(date)) : null;
 
@@ -102,7 +95,7 @@ export default function AppointmentFlow({
     );
   }
 
-  //FLOW NORMALE
+  //RECAP APPOINTMENT
   return (
     <ThemedView style={styles.container}>
       <ThemedText type="title">Hai selezionato:</ThemedText>
@@ -114,27 +107,13 @@ export default function AppointmentFlow({
       {period && <ThemedText>🌤️ {period}</ThemedText>}
       {hour && <ThemedText>⏰ {hour}</ThemedText>}
 
-      {service && period && hour && (
-        <View style={{ flexDirection: "row", gap: 12, marginTop: 12 }}>
-          <ButtonConfirm
-            onPress={handleConfirm}
-            message="Conferma prenotazione"
-          ></ButtonConfirm>
-          <Pressable
-            onPress={() => selectHourRef.current?.onBackFromPeriod()}
-            style={styles.buttonCancel}
-          >
-            <ThemedText>← Indietro</ThemedText>
-          </Pressable>
-        </View>
-      )}
-
       <SelectHour
         bookedHours={bookedHours}
         ref={selectHourRef}
         service={service}
         period={period}
         selectedHour={hour ?? undefined}
+        handleConfirm={handleConfirm}
         onSelectService={(s) => {
           setService(s);
           setPeriod(null);

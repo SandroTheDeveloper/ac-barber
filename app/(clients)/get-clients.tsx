@@ -136,20 +136,6 @@ export default function ClientsScreen() {
           }}
           style={styles.search}
         />
-
-        {/* 🔹 Lista clienti */}
-        <FlatList
-          data={paginatedClients}
-          keyExtractor={(item) => item.id!}
-          renderItem={renderItem}
-          contentContainerStyle={{ paddingBottom: 24 }}
-          ListEmptyComponent={
-            <ThemedText style={{ marginTop: 20 }}>
-              Nessun cliente trovato
-            </ThemedText>
-          }
-        />
-
         {/* 🔹 Controlli paginazione */}
         {totalPages > 1 && (
           <View style={styles.pagination}>
@@ -158,7 +144,7 @@ export default function ClientsScreen() {
               onPress={() => setCurrentPage((p) => p - 1)}
               style={[styles.pageBtn, currentPage === 0 && { opacity: 0.5 }]}
             >
-              <ThemedText>{"<"} Indietro</ThemedText>
+              <ThemedText>{"<"} </ThemedText>
             </Pressable>
 
             <ThemedText>
@@ -173,10 +159,22 @@ export default function ClientsScreen() {
                 currentPage + 1 >= totalPages && { opacity: 0.5 },
               ]}
             >
-              <ThemedText>Avanti {">"}</ThemedText>
+              <ThemedText> {">"}</ThemedText>
             </Pressable>
           </View>
         )}
+        {/* 🔹 Lista clienti */}
+        <FlatList
+          data={paginatedClients}
+          keyExtractor={(item) => item.id!}
+          renderItem={renderItem}
+          contentContainerStyle={{ paddingBottom: 24 }}
+          ListEmptyComponent={
+            <ThemedText style={{ marginTop: 20 }}>
+              Nessun cliente trovato
+            </ThemedText>
+          }
+        />
       </View>
     </>
   );

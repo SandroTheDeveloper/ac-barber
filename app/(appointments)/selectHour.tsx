@@ -2,23 +2,13 @@ import { Pressable, View } from "react-native";
 import { ThemedText } from "@/components/themed-text";
 import { ForwardedRef, forwardRef, JSX, useImperativeHandle } from "react";
 import { styles } from "./styles";
-import { Period, Service } from "../features/appointments/types";
+import {
+  Period,
+  SelectHourProps,
+  Service,
+} from "../features/appointments/types";
 import { getBlockedSlots } from "../services/helper";
-
-type SelectHourProps = {
-  service: Service | null;
-  period: Period | null;
-  selectedHour?: string;
-  bookedHours: string[];
-
-  onSelectService: (service: Service) => void;
-  onSelectPeriod: (period: Period) => void;
-  onSelectHour: (hour: string) => void;
-
-  onBackFromService: () => void;
-  onBackFromPeriod: () => void;
-  onBackFromHour: () => void;
-};
+import { ButtonConfirm } from "@/components/ui/button/ButtonConfirm";
 
 export const SelectHour = forwardRef(
   (
@@ -32,7 +22,7 @@ export const SelectHour = forwardRef(
       onSelectHour,
       onBackFromService,
       onBackFromPeriod,
-      onBackFromHour,
+      handleConfirm,
     }: SelectHourProps,
     ref: ForwardedRef<{ onBackFromPeriod: () => void }>
   ): JSX.Element => {
@@ -59,10 +49,6 @@ export const SelectHour = forwardRef(
     };
 
     const slots = generateSlots();
-    const rows: string[][] = [];
-    for (let i = 0; i < slots.length; i += 5) {
-      rows.push(slots.slice(i, i + 5));
-    }
 
     const handleBackFromPeriod = () => {
       onBackFromPeriod();
@@ -114,42 +100,60 @@ export const SelectHour = forwardRef(
 
         {/* STEP 3 — ORARIO */}
         {service && period && (
-          <View>
+          <View style={{ width: "100%" }}>
             {!selectedHour && (
               <Pressable onPress={onBackFromPeriod} style={styles.back}>
                 <ThemedText>← Indietro</ThemedText>
               </Pressable>
             )}
-
-            {rows.map((row) => (
-              <View key={row.join("-")} style={styles.rowHour}>
-                {row.map((hour) => {
-                  const isSelected = selectedHour === hour;
-                  const isBooked = blockedSlots.includes(hour);
-                  return (
-                    <Pressable
-                      key={hour}
-                      disabled={isBooked}
-                      onPress={() => onSelectHour(hour)}
+            <View style={styles.hoursGrid}>
+              {slots.map((hour) => {
+                const isSelected = selectedHour === hour;
+                const isBooked = blockedSlots.includes(hour);
+                return (
+                  <Pressable
+                    key={hour}
+                    disabled={isBooked}
+                    onPress={() => onSelectHour(hour)}
+                    style={[
+                      styles.hour,
+                      isSelected && styles.selected,
+                      isBooked && styles.booked,
+                    ]}
+                  >
+                    <ThemedText
                       style={[
-                        styles.hour,
-                        isSelected && styles.selected,
-                        isBooked && styles.booked,
+                        isSelected && styles.selectedText,
+                        isBooked && styles.bookedText,
                       ]}
                     >
-                      <ThemedText
-                        style={[
-                          isSelected && styles.selectedText,
-                          isBooked && styles.bookedText,
-                        ]}
-                      >
-                        {hour}
-                      </ThemedText>
-                    </Pressable>
-                  );
-                })}
-              </View>
-            ))}
+                      {hour}
+                    </ThemedText>
+                  </Pressable>
+                );
+              })}
+            </View>
+          </View>
+        )}
+
+        {/* BOTTONE CONFERMA: appare solo se l'ora è selezionata */}
+        {selectedHour && (
+          <View
+            style={[
+              styles.confirmSectionInside,
+              { flexDirection: "row", gap: 10, alignItems: "center" },
+            ]}
+          >
+            <Pressable
+              onPress={onBackFromPeriod}
+              style={{ flex: 1, alignItems: "center" }}
+            >
+              <ThemedText>Annulla</ThemedText>
+            </Pressable>
+
+            <View style={{ flex: 2 }}>
+              <ButtonConfirm onPress={handleConfirm} message="Conferma" />
+            </View>
           </View>
         )}
       </View>
