@@ -1,5 +1,5 @@
 import { useLocalSearchParams } from "expo-router";
-import { Alert } from "react-native";
+import { Alert, Platform } from "react-native";
 import { useEffect, useRef, useState } from "react";
 
 import { ThemedText } from "@/components/themed-text";
@@ -48,6 +48,33 @@ export default function AppointmentFlow({}) {
 
       if (authError || !user) {
         Alert.alert("Errore", "Impossibile identificare l'utente");
+        return;
+      }
+
+      const formattedDate = toDateOnly(selectedDate);
+
+      // --- LOGICA DI CONTROLLO: Massimo un appuntamento al giorno ---
+      const { data: existingApp, error: checkError } = await supabase
+        .from("appointments")
+        .select("id")
+        .eq("client_id", user.id)
+        .eq("appointment_date", formattedDate)
+        .limit(1);
+
+      if (checkError) throw checkError;
+
+      if (existingApp && existingApp.length > 0) {
+        Alert.alert(
+          "Prenotazione non consentita",
+          "Hai già un appuntamento prenotato per questa data. Puoi prenotare massimo un appuntamento al giorno.",
+        );
+        if (Platform.OS === "web") {
+          const confirmed = window.confirm(
+            "Hai già un appuntamento prenotato per questa data. Puoi prenotare massimo un appuntamento al giorno.",
+          );
+          if (!confirmed) return;
+        }
+
         return;
       }
 

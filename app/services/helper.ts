@@ -29,17 +29,17 @@ export function formatAppointmentDate(
   };
 }
 
-  //FORMAT DATE
-  export function formatDate (dateString: string) {
-    if (!dateString) return "Seleziona data";
-    const date = new Date(dateString + "T00:00:00");
-    return date.toLocaleDateString("it-IT", {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
+//FORMAT DATE
+export function formatDate(dateString: string) {
+  if (!dateString) return "Seleziona data";
+  const date = new Date(dateString + "T00:00:00");
+  return date.toLocaleDateString("it-IT", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+};
 
 // Configurazione italiana del calendario
 LocaleConfig.locales["it"] = {
@@ -86,7 +86,7 @@ LocaleConfig.locales["it"] = {
 LocaleConfig.defaultLocale = "it";
 
 const SERVICES: Service[] = ["TAGLIO", "BARBA", "TAGLIO+BARBA"];
-export function getServices () {
+export function getServices() {
   return SERVICES;
 };
 
@@ -107,7 +107,7 @@ const toMinutes = (time: string) => {
   return h * 60 + m;
 };
 
-export function getBlockedSlots (bookedHours: string[], service: Service): string[]  {
+export function getBlockedSlots(bookedHours: string[], service: Service): string[] {
   const duration = getServiceDuration(service);
   const interval = 15;
   const slotsToBlock = duration / interval;
@@ -131,7 +131,7 @@ export function getBlockedSlots (bookedHours: string[], service: Service): strin
 };
 
 //GENERATE HOUR SLOTS
-export function generateSlots (period: Period | null, day: string): string[] {
+export function generateSlots(period: Period | null, day: string): string[] {
   if (!period) return [];
 
   const hours: string[] = [];
@@ -140,7 +140,7 @@ export function generateSlots (period: Period | null, day: string): string[] {
   const interval = 15;
 
   const now = new Date();
-  const todayStr = now.toISOString().split('T')[0]; 
+  const todayStr = now.toISOString().split('T')[0];
 
   for (let h = startHour; h <= endHour; h++) {
     for (let m = 0; m < 60; m += interval) {
@@ -154,7 +154,7 @@ export function generateSlots (period: Period | null, day: string): string[] {
       if (day === todayStr) {
         const slotTime = new Date();
         slotTime.setHours(h, m, 0, 0);
-        
+
         if (slotTime <= now) continue;
       }
 
@@ -163,3 +163,27 @@ export function generateSlots (period: Period | null, day: string): string[] {
   }
   return hours;
 };
+
+// CHECK SLOT DISPONIBILI
+export function isSlotAvailable(
+  startTime: string,
+  service: Service,
+  blockedSlots: string[]
+): boolean {
+  const duration = getServiceDuration(service);
+  const interval = 15;
+  const slotsNeeded = duration / interval;
+  const startMinutes = toMinutes(startTime);
+
+  for (let i = 0; i < slotsNeeded; i++) {
+    const currentMinutes = startMinutes + i * interval;
+    const h = Math.floor(currentMinutes / 60).toString().padStart(2, "0");
+    const m = (currentMinutes % 60).toString().padStart(2, "0");
+    const currentSlot = `${h}:${m}`;
+
+    if (blockedSlots.includes(currentSlot)) {
+      return false;
+    }
+  }
+  return true;
+}

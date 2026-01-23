@@ -8,6 +8,7 @@ import {
   Modal,
   ScrollView,
   ActivityIndicator,
+  Platform,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ThemedText } from "@/components/themed-text";
@@ -36,14 +37,26 @@ export default function CreateAppointment() {
 
   const handleSave = async () => {
     try {
-      await actions.save();
+      await actions.save(!!id);
       Alert.alert("Successo", "Appuntamento registrato con successo");
+      if (Platform.OS === "web") {
+        const confirmed = window.confirm(
+          "Appuntamento registrato con successo",
+        );
+        if (!confirmed) return;
+      }
       router.replace("/get-appointments");
     } catch (error: any) {
       Alert.alert(
-        "Errore",
-        error.message || "Si è verificato un errore durante il salvataggio"
+        "Attenzione",
+        "Il cliente ha già un appuntamento per la data selzionata",
       );
+      if (Platform.OS === "web") {
+        const confirmed = window.confirm(
+          "Il cliente ha già un appuntamento per la data selzionata",
+        );
+        if (!confirmed) return;
+      }
     }
   };
 
@@ -93,7 +106,7 @@ export default function CreateAppointment() {
               data={state.clients.filter((c) =>
                 `${c.first_name} ${c.last_name}`
                   .toLowerCase()
-                  .includes(clientQuery.toLowerCase())
+                  .includes(clientQuery.toLowerCase()),
               )}
               keyExtractor={(c) => c.id}
               renderItem={({ item }) => (
@@ -101,7 +114,7 @@ export default function CreateAppointment() {
                   onPress={() => {
                     actions.setClientId(item.id);
                     actions.setClientLabel(
-                      `${item.first_name} ${item.last_name}`
+                      `${item.first_name} ${item.last_name}`,
                     );
                     setDropdownClientOpen(false);
                   }}

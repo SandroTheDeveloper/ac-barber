@@ -24,12 +24,12 @@ export default function AppointmentsScreen() {
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
 
-  const [dateFilter, setDateFilter] = useState<DateFilter>("TODAY");
+  const [dateFilter, setDateFilter] = useState<DateFilter>("ALL");
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [calendarOpen, setCalendarOpen] = useState(false);
   const { appointments, loading, remove } = useAppointments(
     dateFilter,
-    selectedDate
+    selectedDate,
   );
 
   const PAGE_SIZE = 10;
@@ -45,7 +45,7 @@ export default function AppointmentsScreen() {
   const handleDelete = (id: string, appointment: Appointment) => {
     const { day, hour } = formatAppointmentDate(
       appointment.appointment_date,
-      appointment.appointment_time
+      appointment.appointment_time,
     );
     const message = `Sei sicuro di voler eliminare l'appuntamento di ${appointment.client?.first_name} ${appointment.client?.last_name} del ${day} delle ore ${hour}?`;
 
@@ -69,21 +69,29 @@ export default function AppointmentsScreen() {
     await remove(id);
   };
 
-  // 🔍 Filtra clienti
+  // 🔍 Filtra e Ordina appuntamenti
   const filteredAppointments = useMemo(() => {
     const q = search.toLowerCase();
-    return appointments.filter(
+
+    const filtered = appointments.filter(
       (c) =>
         c.client?.first_name.toLowerCase().includes(q) ||
         c.client?.last_name.toLowerCase().includes(q) ||
-        (c.service?.toLowerCase().includes(q) ?? false)
+        (c.service?.toLowerCase().includes(q) ?? false),
     );
+
+    return filtered.sort((a, b) => {
+      if (a.appointment_date !== b.appointment_date) {
+        return b.appointment_date.localeCompare(a.appointment_date);
+      }
+      return b.appointment_time.localeCompare(a.appointment_time);
+    });
   }, [appointments, search]);
 
   // 🔹 Pagina corrente
   const paginatedAppointments = filteredAppointments.slice(
     currentPage * PAGE_SIZE,
-    currentPage * PAGE_SIZE + PAGE_SIZE
+    currentPage * PAGE_SIZE + PAGE_SIZE,
   );
 
   const totalPages = Math.ceil(filteredAppointments.length / PAGE_SIZE);
@@ -92,7 +100,7 @@ export default function AppointmentsScreen() {
   const renderItem = ({ item }: { item: Appointment }) => {
     const { weekday, day, hour } = formatAppointmentDate(
       item.appointment_date,
-      item.appointment_time
+      item.appointment_time,
     );
 
     const today = new Date().toISOString().split("T")[0];

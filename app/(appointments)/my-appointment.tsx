@@ -41,7 +41,7 @@ export default function MyAppointment() {
   const handleDelete = (id: string, appointment: Appointment) => {
     const { day, hour } = formatAppointmentDate(
       appointment.appointment_date,
-      appointment.appointment_time
+      appointment.appointment_time,
     );
     const message = `Sei sicuro di voler eliminare l'appuntamento del ${day} delle ore ${hour}?`;
 
@@ -68,21 +68,29 @@ export default function MyAppointment() {
     }
   };
 
-  // 🔍 Filtra clienti
+  // 🔍 Filtra e Ordina appuntamenti
   const filteredAppointments = useMemo(() => {
     const q = search.toLowerCase();
-    return appointments.filter(
+
+    const filtered = appointments.filter(
       (c) =>
         c.client?.first_name.toLowerCase().includes(q) ||
         c.client?.last_name.toLowerCase().includes(q) ||
-        (c.service?.toLowerCase().includes(q) ?? false)
+        (c.service?.toLowerCase().includes(q) ?? false),
     );
+
+    return filtered.sort((a, b) => {
+      if (a.appointment_date !== b.appointment_date) {
+        return b.appointment_date.localeCompare(a.appointment_date);
+      }
+      return b.appointment_time.localeCompare(a.appointment_time);
+    });
   }, [appointments, search]);
 
   // 🔹 Pagina corrente
   const paginatedAppointments = filteredAppointments.slice(
     currentPage * PAGE_SIZE,
-    currentPage * PAGE_SIZE + PAGE_SIZE
+    currentPage * PAGE_SIZE + PAGE_SIZE,
   );
 
   const totalPages = Math.ceil(filteredAppointments.length / PAGE_SIZE);
@@ -91,7 +99,7 @@ export default function MyAppointment() {
   const renderItem = ({ item }: { item: Appointment }) => {
     const { weekday, day, hour } = formatAppointmentDate(
       item.appointment_date,
-      item.appointment_time
+      item.appointment_time,
     );
 
     const today = new Date().toISOString().split("T")[0];
@@ -152,7 +160,7 @@ export default function MyAppointment() {
                 last_name,
                 phone
               )
-              `
+              `,
       )
       .eq("client_id", clientId)
       .order("appointment_date", { ascending: true });
@@ -184,7 +192,7 @@ export default function MyAppointment() {
       data.map((a: any) => ({
         ...a,
         client: a.clients ?? null,
-      }))
+      })),
     );
   };
 
