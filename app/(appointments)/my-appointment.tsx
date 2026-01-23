@@ -15,11 +15,10 @@ import { formatAppointmentDate } from "../services/helper";
 import { Appointment, DateFilter } from "../features/appointments/types";
 import { styles } from "./styles";
 import { CalendarPicker } from "@/components/ui/calendar/CalendarPicker";
+import { useMyAppointments } from "../features/appointments/hooks/useMyAppointments";
 
 export default function MyAppointment() {
-  const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [search, setSearch] = useState("");
-  const [loading, setLoading] = useState(false);
 
   const [currentPage, setCurrentPage] = useState(0);
   const PAGE_SIZE = 10;
@@ -29,12 +28,21 @@ export default function MyAppointment() {
   const [calendarOpen, setCalendarOpen] = useState(false);
 
   const [clientId, setClientId] = useState<string | null>(null);
+  const { appointments, loading, remove } = useMyAppointments(
+    clientId,
+    dateFilter,
+    selectedDate,
+  );
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
       setClientId(data.user?.id ?? null);
     });
   }, []);
+
+  useEffect(() => {
+    setCurrentPage(0);
+  }, [dateFilter, selectedDate, search]);
 
   // 🔹 Elimina cliente con conferma
   const handleDelete = (id: string, appointment: Appointment) => {
@@ -61,10 +69,7 @@ export default function MyAppointment() {
   };
 
   const deleteAndRefresh = async (id: string) => {
-    const success = true;
-    if (success) {
-      setAppointments((prev) => prev.filter((a) => a.id !== id));
-    }
+    await remove(id);
   };
 
   // 🔍 Filtra e Ordina appuntamenti
@@ -141,67 +146,6 @@ export default function MyAppointment() {
       </View>
     );
   };
-
-  const loadAppointments = async () => {
-    setLoading(true);
-    const today = new Date().toISOString().split("T")[0];
-    let query = supabase
-      .from("appointments")
-      .select(
-        `
-              id,
-              appointment_date,
-              appointment_time,
-              service,
-              status,
-              clients (
-                first_name,
-                last_name,
-                phone
-              )
-              `,
-      )
-      .eq("client_id", clientId)
-      .order("appointment_date", { ascending: true });
-
-    setLoading(false);
-
-    switch (dateFilter) {
-      case "TODAY":
-        query = query.eq("appointment_date", today);
-        break;
-      case "DATE":
-        if (selectedDate) {
-          query = query.eq("appointment_date", selectedDate);
-        }
-        break;
-      case "PAST":
-        query = query.lt("appointment_date", today);
-        break;
-      case "ALL":
-      default:
-        break;
-    }
-
-    const { data, error } = await query;
-
-    if (error) return;
-
-    setAppointments(
-      data.map((a: any) => ({
-        ...a,
-        client: a.clients ?? null,
-      })),
-    );
-  };
-
-  useEffect(() => {
-    loadAppointments();
-  }, [clientId, dateFilter, selectedDate]);
-
-  useEffect(() => {
-    setCurrentPage(0);
-  }, [search, dateFilter, selectedDate]);
 
   return (
     <>

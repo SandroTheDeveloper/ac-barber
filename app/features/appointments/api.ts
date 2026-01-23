@@ -1,10 +1,15 @@
 import { supabase } from "@/app/services/supabase";
-import { Appointment } from "./types";
-import { DateFilter } from "./hooks/useAppointments";
+import { Appointment, DateFilter } from "./types";
 
 // GET APPOINTMENT BY ID
-export const getMyAppointments = async (clientId: string) => {
-  return supabase
+export async function getMyAppointments(
+  clientId: string,
+  filter: DateFilter,
+  selectedDate?: string | null
+): Promise<Appointment[]> {
+  const today = new Date().toISOString().split("T")[0];
+
+  let query = supabase
     .from("appointments")
     .select(`
       id,
@@ -18,9 +23,42 @@ export const getMyAppointments = async (clientId: string) => {
         phone
       )
     `)
-    .eq("client_id", clientId)
-    .order("appointment_date", { ascending: true });
-};
+    .eq("client_id", clientId);
+
+  // Applichiamo i filtri alla query
+  switch (filter) {
+    case "TODAY":
+      query = query.eq("appointment_date", today);
+      break;
+    case "DATE":
+      if (selectedDate) {
+        query = query.eq("appointment_date", selectedDate);
+      }
+      break;
+    case "PAST":
+      query = query.lt("appointment_date", today);
+      break;
+  }
+
+  // Ordiniamo e finalmente eseguiamo la chiamata
+  const { data, error } = await query.order("appointment_date", { ascending: false });
+
+  if (error || !data) {
+    console.error("Errore fetch appuntamenti:", error);
+    return [];
+  }
+
+  // Mappiamo i dati per risolvere il problema dell'array in 'clients'
+  return data.map((a: any) => ({
+    id: a.id,
+    appointment_date: a.appointment_date,
+    appointment_time: a.appointment_time,
+    service: a.service,
+    status: a.status,
+    // Risolviamo l'errore di tipo: prendiamo il primo elemento se è un array
+    client: Array.isArray(a.clients) ? a.clients[0] : a.clients,
+  }));
+}
 
 // CREATE
 export async function createAppointment({

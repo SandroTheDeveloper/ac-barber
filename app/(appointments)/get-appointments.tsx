@@ -24,10 +24,7 @@ export default function AppointmentsScreen() {
   const [dateFilter, setDateFilter] = useState<DateFilter>("ALL");
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [calendarOpen, setCalendarOpen] = useState(false);
-  const { appointments, loading, remove } = useAppointments(
-    dateFilter,
-    selectedDate,
-  );
+  const { appointments, remove } = useAppointments(dateFilter, selectedDate);
 
   const PAGE_SIZE = 10;
   // 🔹 Modifica cliente

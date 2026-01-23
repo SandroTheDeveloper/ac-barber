@@ -1,28 +1,34 @@
-import { useEffect, useState } from "react";
-import { getMyAppointments } from "../api";
-import { Appointment } from "../types";
+import { useCallback, useEffect, useState } from "react";
+import { deleteAppointment, getMyAppointments } from "../api";
+import { Appointment, DateFilter } from "../types";
 
 export const useMyAppointments = (
   clientId: string | null,
-  filters: { date?: string }
+  dateFilter: DateFilter,
+  selectedDate?: string | null
+
 ) => {
-  const [data, setData] = useState<Appointment[]>([]);
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
+  const load = useCallback(async () => {
     if (!clientId) return;
 
     setLoading(true);
-    getMyAppointments(clientId).then(({ data }) => {
-      setData(
-        data?.map(a => ({
-          ...a,
-          client: a.clients?.[0] ?? null,
-        })) ?? []
-      );
-      setLoading(false);
-    });
-  }, [clientId, filters]);
+    const data = await getMyAppointments(clientId, dateFilter, selectedDate); setAppointments(data);
+    setLoading(false);
+  }, [clientId, dateFilter, selectedDate]);
 
-  return { data, loading };
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  const remove = async (id: string) => {
+    const success = await deleteAppointment(id);
+    if (success) {
+      setAppointments((prev) => prev.filter((a) => a.id !== id));
+    }
+  };
+
+  return { appointments, loading, remove };
 };
