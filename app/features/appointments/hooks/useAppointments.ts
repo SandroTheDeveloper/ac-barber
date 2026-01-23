@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
-import { Appointment } from "../types";
+import { Appointment, DateFilter } from "../types";
 import { getAppointments, deleteAppointment } from "../api";
-
-export type DateFilter = "TODAY" | "DATE" | "PAST" | "ALL";
 
 export function useAppointments(
   dateFilter: DateFilter,

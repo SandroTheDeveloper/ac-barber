@@ -12,11 +12,8 @@ import { ThemedText } from "@/components/themed-text";
 import { router, Stack } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { formatAppointmentDate } from "../services/helper";
-import { Appointment } from "../features/appointments/types";
-import {
-  DateFilter,
-  useAppointments,
-} from "../features/appointments/hooks/useAppointments";
+import { Appointment, DateFilter } from "../features/appointments/types";
+import { useAppointments } from "../features/appointments/hooks/useAppointments";
 import { styles } from "./styles";
 import { CalendarPicker } from "@/components/ui/calendar/CalendarPicker";
 

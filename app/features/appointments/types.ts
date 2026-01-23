@@ -15,6 +15,8 @@ export type Service = "TAGLIO" | "BARBA" | "TAGLIO+BARBA";
 
 export type Period = "MATTINO" | "POMERIGGIO";
 
+export type DateFilter = "TODAY" | "DATE" | "PAST" | "ALL";
+
 export type SelectHourProps = {
   service: Service | null;
   period: Period | null;

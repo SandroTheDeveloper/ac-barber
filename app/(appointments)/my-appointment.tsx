@@ -12,8 +12,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { supabase } from "../services/supabase";
 import { formatAppointmentDate } from "../services/helper";
-import { Appointment } from "../features/appointments/types";
-import { DateFilter } from "../features/appointments/hooks/useAppointments";
+import { Appointment, DateFilter } from "../features/appointments/types";
 import { styles } from "./styles";
 import { CalendarPicker } from "@/components/ui/calendar/CalendarPicker";
 

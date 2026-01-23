@@ -1,6 +1,5 @@
 import { useMemo, useState } from "react";
 import { View } from "react-native";
-import { ThemedText } from "@/components/themed-text";
 import { Calendar } from "react-native-calendars";
 import { styles } from "./calendar.styles";
 import { CalendarPickerProps } from "./types";
@@ -107,12 +106,6 @@ export function CalendarPicker({
           selectedDayTextColor: "#fff",
         }}
       />
-
-      {showSelectedLabel && value && (
-        <ThemedText style={styles.selectedInfo}>
-          Data selezionata: {new Date(value).toLocaleDateString("it-IT")}
-        </ThemedText>
-      )}
     </View>
   );
 }
