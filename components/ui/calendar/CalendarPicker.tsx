@@ -111,7 +111,6 @@ export function CalendarPicker({
 
     return marks;
   }, [disabledDates, fullDates, value]);
-  console.log("DATE PIENE RICEVUTE DAL DB:", fullDates);
   // RENDER
   return (
     <View style={styles.container}>
@@ -136,9 +135,23 @@ export function CalendarPicker({
           onSelectDate(day.dateString);
         }}
         theme={{
+          // Colori frecce e oggi
           todayTextColor: "green",
           arrowColor: "green",
-          // Rimuovi proprietà che vanno in conflitto con customStyles
+
+          // DIMENSIONI TESTO
+          textDayFontSize: 20,
+          textMonthFontSize: 22,
+          textDayHeaderFontSize: 16,
+
+          // FONT WEIGHT
+          textDayFontWeight: "500",
+          textMonthFontWeight: "bold",
+          textDayHeaderFontWeight: "bold",
+        }}
+        style={{
+          height: 450,
+          paddingVertical: 10,
         }}
       />
     </View>

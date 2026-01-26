@@ -1,5 +1,6 @@
 import { supabase } from "@/app/services/supabase";
 import { Appointment, DateFilter } from "./types";
+import { generateSlots, getBlockedSlots, isSlotAvailable } from "@/app/services/helper";
 
 // GET APPOINTMENT BY ID
 export async function getMyAppointments(
@@ -153,4 +154,41 @@ export async function getAppointments(
 export async function deleteAppointment(id: string): Promise<boolean> {
   const { error } = await supabase.from("appointments").delete().eq("id", id);
   return !error;
+}
+
+export async function getFullDatesFromSupabase(): Promise<string[]> {
+  // 1. Prendiamo solo gli appuntamenti confermati
+  const { data, error } = await supabase
+    .from("appointments")
+    .select("appointment_date, appointment_time")
+    .eq("status", "CONFIRMED");
+
+  if (error || !data) return [];
+
+  // 2. Raggruppiamo gli orari per data
+  const grouped = data.reduce((acc: Record<string, string[]>, curr) => {
+    acc[curr.appointment_date] = [...(acc[curr.appointment_date] || []), curr.appointment_time];
+    return acc;
+  }, {});
+
+  // 3. Analizziamo quali date sono sature
+  const minService = "BARBA"; // Usiamo il servizio più corto come test di "pieno"
+
+  return Object.keys(grouped).filter((date) => {
+    const bookedHours = grouped[date];
+    const blockedSlots = getBlockedSlots(bookedHours, minService);
+
+    // Controlliamo la disponibilità reale considerando l'orario attuale (passiamo 'date')
+    const allPossibleSlots = [
+      ...generateSlots("MATTINO", date),
+      ...generateSlots("POMERIGGIO", date)
+    ];
+
+    // Se non c'è nemmeno uno slot libero per una barba, il giorno è pieno
+    const hasSpace = allPossibleSlots.some(slot =>
+      isSlotAvailable(slot, minService, blockedSlots)
+    );
+
+    return !hasSpace;
+  });
 }
