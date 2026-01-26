@@ -7,4 +7,5 @@ export type CalendarPickerProps = {
 
   disabledWeekDays?: number[]; // 0 = dom, 1 = lun
   showSelectedLabel?: boolean;
+  fullDates?: string[];
 };

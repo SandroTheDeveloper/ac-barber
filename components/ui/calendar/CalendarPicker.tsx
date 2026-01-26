@@ -11,6 +11,7 @@ export function CalendarPicker({
   maxDate,
   disabledWeekDays = [],
   showSelectedLabel = false,
+  fullDates = [],
 }: CalendarPickerProps) {
   const today = useMemo(() => new Date(), []);
 
@@ -21,10 +22,9 @@ export function CalendarPicker({
     return `${y}-${m}-${d}`;
   };
 
-  //DATE LIMITS
+  // DATE LIMITS
   const todayStr = useMemo(() => toLocaleDateString(today), [today]);
 
-  //MIN DATE
   const min = useMemo(() => {
     return minDate && minDate > todayStr ? minDate : todayStr;
   }, [minDate, todayStr]);
@@ -39,10 +39,11 @@ export function CalendarPicker({
     month: today.getMonth(),
     year: today.getFullYear(),
   });
-  //STATE
+
+  // STATE
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
-  //ARROW LOGIC
+  // ARROW LOGIC
   const disableLeftArrow =
     visibleMonth.year === today.getFullYear() &&
     visibleMonth.month === today.getMonth();
@@ -51,7 +52,7 @@ export function CalendarPicker({
     visibleMonth.year === maxDateObj.getFullYear() &&
     visibleMonth.month === maxDateObj.getMonth();
 
-  //DISABLED DAYS
+  // DISABLED DAYS (Lunedì/Domenica)
   const disabledDates = useMemo(() => {
     if (!disabledWeekDays.length) return {};
 
@@ -62,28 +63,60 @@ export function CalendarPicker({
     for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
       if (disabledWeekDays.includes(d.getDay())) {
         const key = toLocaleDateString(d);
-        disabled[key] = { disabled: true, disableTouchEvent: true };
+        disabled[key] = {
+          disableTouchEvent: true,
+          customStyles: {
+            text: { color: "#d9e1e8" },
+          },
+        };
       }
     }
 
     return disabled;
   }, [min, max, disabledWeekDays]);
 
-  //MARKED DATES
-  const markedDates = {
-    ...disabledDates,
-    ...(value && {
-      [value]: {
-        selected: true,
-        selectedColor: "green",
-      },
-    }),
-  };
+  // MARKED DATES
+  const markedDates = useMemo(() => {
+    const marks: Record<string, any> = { ...disabledDates };
 
-  //RENDER
+    // 1. DATE PIENE (Rosse)
+    fullDates.forEach((date) => {
+      marks[date] = {
+        disableTouchEvent: true,
+        customStyles: {
+          text: {
+            color: "red",
+            fontWeight: "bold",
+          },
+        },
+      };
+    });
+
+    // 2. DATA SELEZIONATA (Verde)
+    if (value) {
+      marks[value] = {
+        selected: true,
+        customStyles: {
+          container: {
+            backgroundColor: "green",
+            borderRadius: 8,
+          },
+          text: {
+            color: "white",
+            fontWeight: "bold",
+          },
+        },
+      };
+    }
+
+    return marks;
+  }, [disabledDates, fullDates, value]);
+  console.log("DATE PIENE RICEVUTE DAL DB:", fullDates);
+  // RENDER
   return (
     <View style={styles.container}>
       <Calendar
+        markingType={"custom"}
         firstDay={1}
         minDate={min}
         maxDate={max}
@@ -96,14 +129,16 @@ export function CalendarPicker({
           setVisibleMonth({ month: m.month - 1, year: m.year })
         }
         onDayPress={(day) => {
+          // Blocco extra di sicurezza: se è pieno o disabilitato, ignora il click
+          if (fullDates.includes(day.dateString)) return;
+
           setSelectedDate(day.dateString);
           onSelectDate(day.dateString);
         }}
         theme={{
           todayTextColor: "green",
           arrowColor: "green",
-          selectedDayBackgroundColor: "green",
-          selectedDayTextColor: "#fff",
+          // Rimuovi proprietà che vanno in conflitto con customStyles
         }}
       />
     </View>

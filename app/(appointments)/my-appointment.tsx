@@ -207,6 +207,10 @@ export default function MyAppointment() {
             </View>
           </Pressable>
         </Modal>
+        <ThemedText>
+          {" "}
+          {selectedDate ? `Data selezionata: ${selectedDate}` : ""}{" "}
+        </ThemedText>
         <FlatList
           data={paginatedAppointments}
           keyExtractor={(item) => item.id!}
